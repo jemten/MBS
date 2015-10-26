@@ -1,0 +1,7 @@
+[Protocol]
+Title=ST_More_Beads
+ConfigFile=..\Protocols\ST_development\More_Beads\Part_I\ST_part1_NS_modIVT.Cfg
+Script=..\Protocols\ST_development\More_Beads\Part_I\ST_part1_NS_modIVT_mod_XP.Prt
+Prologue=..\Protocols\ST_development\More_Beads\Part_I\ST_part1_NS_modIVT.Plg
+VarFile=..\Protocols\ST_development\More_Beads\Part_I\ST_part1_NS_modIVT.Var
+General=..\Protocols\Constants\RNASelection.Gen
