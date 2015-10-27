@@ -108,7 +108,7 @@ EndIf
 Gval tipWashVol New 50
 
 ; Extra volume for each row in DeepWellPlate
-Gval XtraDeepWellvol New 50
+Gval XtraDeepWellvol New 60
 
 ; Extra dNTPMixVol
 Gval TotaldNTPMixVol New $dNTPMixVol
@@ -127,10 +127,9 @@ Gval cntTipID2 New 20
 
 
 ; Total number of XP purifications in the protocol
-Gval numberOfXPRuns New 3
+Gval numberOfXPRuns New 2
 
 ; Max mixing volume to protect P motor
-; Tried increasing for better mixing in the first Ampure
 Gval xpBeadMixVol New 150
 
 ; Local (but global really) temporary variables
@@ -142,7 +141,6 @@ Gval ethanolWashesDone New
 ; in sysvar @TipVolume, which is useful
 ; This var replaces caPreAirAsp and caPreAirDisp
 Gval xpAirVol New 10
-Gval xpAirVol2 New 20
 Gval caAirVol New 10
 ; Changed the xpExtraDisp from 10 to 0 in order to accomodate for the larger volume 
 ; Check if sufficient /AJ

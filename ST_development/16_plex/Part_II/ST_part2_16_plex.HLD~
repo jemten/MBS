@@ -1,7 +1,0 @@
-[Protocol]
-Title=ST_part2_16plex
-ConfigFile=..\Protocols\ST_development\16_plex\ST_part_II\ST_part2_16_plex.Cfg
-Script=..\Protocols\ST_development\16_plex\ST_part_II\ST_part2_16_plex_XP_paralell.Prt
-Prologue=..\Protocols\ST_development\16_plex\ST_part_II\ST_part2_16_plex.Plg
-VarFile=..\Protocols\ST_development\16_plex\ST_part_II\ST_part2_16_plex.Var
-General=..\Protocols\Constants\RNASelection.Gen

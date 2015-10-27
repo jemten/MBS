@@ -38,6 +38,7 @@ Gval cntXPBeadVol New
 Gval cntXPElutionVol New
 Gval cntNoTransfer New
 Gval cntPostXPTemp New
+Sval cntBufferPos New ELUTION_BUFFER
 Gval cntReserveID New
 Gval TipCount New 0
 
@@ -112,7 +113,7 @@ EndIf
 Gval tipWashVol New 50
 
 ; Extra volume for each row in DeepWellPlate
-Gval XtraDeepWellvol New 50
+Gval XtraDeepWellvol New 60
 
 ; ======================================================XP-BEAD_PURIF_VARS
 Sval tempString1 New
@@ -124,7 +125,6 @@ Gval GobackDone New 1
 Gval TimeCheck New
 Gval cntTipID1 New 10
 Gval cntTipID2 New 20
-Sval cntBufferPos New ELUTION_BUFFER
 
 
 Sval tempString1 New
