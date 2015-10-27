@@ -1715,7 +1715,6 @@ AddToLogFile ">(10-1-1)"
 ; $cntXPStartingPos = Which plate (row) contains the sample
 ; $cntXPWorkingPos = Which plate (row) the beads and samples should incubate
 ; $cntXPElutionPos = Which plate (row) should be eluted in
-
 ; $cntXPBeadVol = amount of XP beads
 ; $cntXPElutionVol = Elution volume
 ; $cntPostXPTemp = Sets the temperature for next step when the elution starts
@@ -1929,12 +1928,12 @@ EndIf
 
 (10-4-4)[StartingWatch]
 AddToLogFile ">(10-4-4)"
-
 ; Starting watch
 If $DispIndex EQ 1
 	AddToLogFile "Starting watch: " $DispIndex
 	StartWatch 1
 EndIf
+	
 (10-5-1)[GoForSample2]
 AddToLogFile ">(10-5-1)"
 AddToLogFile "Going for Sample 2"
@@ -2184,7 +2183,6 @@ EndIf
 
 LiqOutWell $xpTemp1 #P_SPEED_LLL
 LiqOutWell $xpTemp2 #P_SPEED_LLL
-
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
 
 (10-7-8)[ReMix]
@@ -2294,7 +2292,7 @@ AddToLogFile ">(10-7-11)"
 If $DispIndex EQ 2
 	_SetTemp 2 $cntPostXPTemp
 EndIf
-	
+
 (10-8-1)[*WashEtOH*]
 AddToLogFile ">(10-8-1)"
 AddToLogFile "Starting EtOH washes"
@@ -2442,8 +2440,8 @@ AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "We
 (10-10-3)[AspElution]
 AddToLogFile ">(10-10-3)"
 Do 3 
-	LiqIn 25 #P_SPEED_M
-	LiqOut 25 #P_SPEED_M
+	LiqIn 30 #P_SPEED_M
+	LiqOut 30 #P_SPEED_M
 Loop
 WaitSec $1sec
 Down% 10 #Z_SPEED_M W
