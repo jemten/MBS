@@ -1038,7 +1038,7 @@ If $tempVar > $xpBeadMixVol
     Gval tempVar Let $xpBeadMixVol
 EndIf
 Gval Tempo4 Let $tempVar
-Gval Tempo4 Mul 0.8
+Gval Tempo4 Mul 0.85
 ActionZ #Z_SPEED_MH
 RScanZ $scanDist #Z_SPEED_LL
 If @Result <> 0
@@ -1229,7 +1229,7 @@ Endif
 WaitSec $1sec
 ActionZ #Z_SPEED_H W
 StandbyZ #Z_SPEED_LL W
-Down% 25 #Z_SPEED_L W
+Down% 10 #Z_SPEED_L W
 SideY% 90 #Y_SPEED_H
 SideY% -90 #Y_SPEED_H
 StandbyZ #Z_SPEED_M W
@@ -1764,7 +1764,7 @@ If $xpTemp1 > $xpBeadMixVol
     Gval xpTemp1 Let $xpBeadMixVol
 EndIf
 Gval Tempo4 Let $xpTemp1
-Gval Tempo4 Mul 0.8 
+Gval Tempo4 Mul 0.85 
 RScanZ $scanDist #Z_SPEED_L
 RMove Z -300
 LiqIn $xpTemp1 #P_SPEED_ML
@@ -1919,12 +1919,28 @@ EndIf
 AddToLogFile ">(10-5-1)"
 AddToLogFile "Going for Sample 2"
 If $DispIndex EQ 1
+	MoveTo WATER $DispIndex
+	ActionZ #Z_SPEED_H W
+	Do 3 
+		LiqIn 50 #P_SPEED_M
+		LiqOut 50 #P_SPEED_M
+	Loop
+	WaitSec $1sec
+	Call ClearTipsXP
 	Gval DispIndex Inc
 	Gval cntReserveID Let $cntTipID2
 	Call ChangeReservedTip
 	Call PreAspiration2
 	GoBack StirUpBeads2 
 EndIf
+MoveTo WATER $DispIndex
+ActionZ #Z_SPEED_H W
+Do 3 
+	LiqIn 50 #P_SPEED_M
+	LiqOut 50 #P_SPEED_M
+Loop
+WaitSec $1sec
+Call ClearTipsXP
 Gval DispIndex Let 1
 Gval cntReserveID Let $cntTipID1
 Call ChangeReservedTip
@@ -1966,10 +1982,10 @@ If @Result < $xpBeadIncTime
 		EndIf
 		If $DispIndex EQ 1
 			MoveTo WATER $DispIndex
-			ActionZ Z_SPEED_H W
+			ActionZ #Z_SPEED_H W
 			Do 3 
-				LiqIn 30 #P_SPEED_M
-				LiqOut 30 #P_SPEED_M
+				LiqIn 50 #P_SPEED_M
+				LiqOut 50 #P_SPEED_M
 			Loop
 			WaitSec $1sec
 			Call ClearTipsXP
@@ -1991,10 +2007,10 @@ If @Result < $xpBeadIncTime
 				Call PreAspiration2
 			EndIf
 			MoveTo WATER $DispIndex
-			ActionZ Z_SPEED_H W
+			ActionZ #Z_SPEED_H W
 			Do 3 
-				LiqIn 30 #P_SPEED_M
-				LiqOut 30 #P_SPEED_M
+				LiqIn 50 #P_SPEED_M
+				LiqOut 50 #P_SPEED_M
 			Loop
 			WaitSec $1sec
 			Call ClearTipsXP
