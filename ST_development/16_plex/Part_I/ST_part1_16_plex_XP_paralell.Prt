@@ -1905,6 +1905,14 @@ EndIf
 AddToLogFile ">(10-5-1)"
 AddToLogFile "Going for Sample 2"
 If $DispIndex EQ 1
+	MoveTo WATER $DispIndex
+	ActionZ #Z_SPEED_H W
+	Do 3 
+		LiqIn 30 #P_SPEED_M
+		LiqOut 30 #P_SPEED_M
+	Loop
+	WaitSec $1sec
+	Call ClearTipsXP
 	Gval DispIndex Inc
 	Gval cntReserveID Let $cntTipID2
 	Call ChangeReservedTip
@@ -1912,6 +1920,14 @@ If $DispIndex EQ 1
 	GoBack StirUpBeads2 
 EndIf
 Gval DispIndex Let 1
+MoveTo WATER $DispIndex
+ActionZ #Z_SPEED_H W
+Do 3 
+	LiqIn 30 #P_SPEED_M
+	LiqOut 30 #P_SPEED_M
+Loop
+WaitSec $1sec
+Call ClearTipsXP
 Gval cntReserveID Let $cntTipID1
 Call ChangeReservedTip
 Call PreAspiration2
@@ -1952,7 +1968,7 @@ If @Result < $xpBeadIncTime
 		EndIf
 		If $DispIndex EQ 1
 			MoveTo WATER $DispIndex
-			ActionZ Z_SPEED_H W
+			ActionZ #Z_SPEED_H W
 			Do 3 
 				LiqIn 30 #P_SPEED_M
 				LiqOut 30 #P_SPEED_M
@@ -1977,7 +1993,7 @@ If @Result < $xpBeadIncTime
 				Call PreAspiration2
 			EndIf
 			MoveTo WATER $DispIndex
-			ActionZ Z_SPEED_H W
+			ActionZ #Z_SPEED_H W
 			Do 3 
 				LiqIn 30 #P_SPEED_M
 				LiqOut 30 #P_SPEED_M
