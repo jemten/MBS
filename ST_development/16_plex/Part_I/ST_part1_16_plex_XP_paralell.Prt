@@ -1917,7 +1917,7 @@ If $DispIndex EQ 1
 	Gval cntReserveID Let $cntTipID2
 	Call ChangeReservedTip
 	Call PreAspiration2
-	GoBack StirUpBeads2 
+	GoBack GetAllBeads
 EndIf
 MoveTo WATER $DispIndex
 ActionZ #Z_SPEED_H W
