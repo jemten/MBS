@@ -746,7 +746,7 @@ PassTime 2
 Gval Tempo1 Let @RESULT
 Gval Tempo2 Let $CDNATime1
 Gval Tempo2 Sub $Tempo1
-AddToLogFile $Tempo1 " seconds remaining"
+AddToLogFile $Tempo2 " seconds remaining"
 GoHome
 WaitTime 2 $CDNATime1
 
