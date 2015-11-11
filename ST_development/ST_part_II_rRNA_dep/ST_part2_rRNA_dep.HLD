@@ -1,0 +1,7 @@
+[Protocol]
+Title=ST_part2_rRNA_dep
+ConfigFile=..\Protocols\ST_development\ST_part_II_rRNA_dep\ST_part2_rRNA_dep.Cfg
+Script=..\Protocols\ST_development\ST_part_II_rRNA_dep\ST_part2_rRNA_dep.Prt
+Prologue=..\Protocols\ST_development\ST_part_II_rRNA_dep\ST_part2_rRNA_dep.Plg
+VarFile=..\Protocols\ST_development\ST_part_II_rRNA_dep\ST_part2_rRNA_dep.Var
+General=..\Protocols\Constants\RNASelection.Gen
