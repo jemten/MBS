@@ -293,8 +293,8 @@ Gval cntAspVol Let @WellVolume
 Call AspirateVolumeCold
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
 
-(3-3-1)[DisprRNAMix]
-AddToLogFile ">(3-3-1)"
+(3-4-1)[DisprRNAMix]
+AddToLogFile ">(3-4-1)"
 MoveTo RRNA_DEPLETION
 Call TipBlowOutAndTouchAndMix
 StartWatch 1
@@ -302,29 +302,29 @@ AddToLogFile "rRNA depletion started"
 RunMessage "rRNA depletion started"
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
 
-(3-4-1)[ReadyTips]
-AddToLogFile "(>3-4-1)"
+(3-5-1)[ReadyTips]
+AddToLogFile "(>3-5-1)"
 Call ReturnTips
 Call GetNewTips
 Call PreAspiration
 
-(3-5-1)[DispOil]
-AddToLogFile ">(3-5-1)"
+(3-6-1)[DispOil]
+AddToLogFile ">(3-6-1)"
 Sval OilPosition Let OIL
 Sval DispPosition Let RRNA_DEPLETION
 Call OilRoutine2
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
 
-(3-6-1)[TipDiscard]
-AddToLogFile ">(3-6-1)"
+(3-7-1)[TipDiscard]
+AddToLogFile ">(3-7-1)"
 AddToLogFile "Returning Tips"
 Call ReturnTips
 GoHome
 Org P W
 Call HomeMotors
 
-(3-7-1)[Ligation_Incubation]
-AddToLogFile ">(3-7-1)"
+(3-8-1)[rRNAdep_Incubation]
+AddToLogFile ">(3-8-1)"
 Gval IncTime Let $rRNAdepTime
 Sval IncType Let "rRNA depletion" 
 Call Incubation
@@ -332,13 +332,13 @@ AddToLogFile "rRNA depletion finished"
 RunMessage "rRNA depletion finished"
 _SetTemp 2 $startTemp
 
-(3-8-1)[ReadyTips]
-AddToLogFile ">(3-8-1)"
+(3-9-1)[ReadyTips]
+AddToLogFile ">(3-9-1)"
 Call GetNewTips
 Call PreAspiration
 
-(3-9-1)[GetUnderOil]
-AddToLogFile ">(3-9-1)"
+(3-10-1)[GetUnderOil]
+AddToLogFile ">(3-10-1)"
 AddToLogFile "Getting sample under oil"
 RunMessage "Getting sample under oil"
 ; String variables that must be set
@@ -358,8 +358,8 @@ Gval XtraAquaAsp Let 1
 Call GetUnderOilRoutine2
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
 
-(3-10-1)[TipDiscard]
-AddToLogFile ">(3-10-1)"
+(3-11-1)[TipDiscard]
+AddToLogFile ">(3-11-1)"
 AddToLogFile "Returning Tips"
 RunMessage "Returning Tips"
 Call ReturnTips

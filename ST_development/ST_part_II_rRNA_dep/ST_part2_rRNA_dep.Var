@@ -225,11 +225,11 @@ ValidMax=60
 Type=Distance
 Description=10
 
-[LBL3]
+[LBL4]
 Type=Label
 Description=cDNA Synthesis
 
-[LINE3]
+[LINE4]
 Type=Line
 
 [CS1]
@@ -367,11 +367,11 @@ ValidMax=10
 Type=Distance
 Description=10
 
-[LBL7]
+[LBL6]
 Type=Label
 Description=DEBUGGING
 
-[LINE7]
+[LINE6]
 Type=Line
 
 [DEBUG1]

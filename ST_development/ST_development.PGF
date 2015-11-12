@@ -19,3 +19,6 @@ ProtocolHolder=..\Protocols\ST_development\16_plex\Part_I\ST_part1_16_plex.HLD
 [ST_Part2_16plex]
 Title=ST_Part2_16plex
 ProtocolHolder=..\Protocols\ST_development\16_plex\Part_II\ST_part2_16_plex.HLD
+[ST_Part2_rRNA_dep]
+Title=ST_Part2_rRNA_dep
+ProtocolHolder=..\Protocols\ST_development\ST_part_II_rRNA_dep\ST_part2_rRNA_dep.HLD

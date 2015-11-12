@@ -708,8 +708,8 @@ Call PreAspiration
 
 (4-16-1)[GetUnderOil]
 AddToLogFile ">(4-16-1)"
-AddToLogFile "Getting sample under oil"
-RunMessage "Getting sample under oil"
+AddToLogFile "Getting sample 1 under oil"
+RunMessage "Getting sample 1 under oil"
 ; String variables that must be set
 ; $AspPosition
 ; $DispPosition
@@ -752,8 +752,8 @@ WaitTime 2 $CDNATime1
 
 (4-19-1)[GetUnderOil]
 AddToLogFile ">(4-19-1)"
-AddToLogFile "Getting sample under oil"
-RunMessage "Getting sample under oil"
+AddToLogFile "Getting sample 2 under oil"
+RunMessage "Getting sample 2 under oil"
 ; String variables that must be set
 ; $AspPosition
 ; $DispPosition
