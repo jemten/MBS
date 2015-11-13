@@ -70,7 +70,7 @@ ValidMax=20
 Type=Hidden
 Description=Number of times to get new wash buffer for tip washing
 VariableName=tipWashRepeats
-DefaultValue=2
+DefaultValue=1
 ValidMin=1
 ValidMax=5
 
@@ -344,11 +344,10 @@ ValidMin=1
 ValidMax=10
 
 [XP7]
-;Unclear if this is used in the current script
 Type=Hidden
-Description=Dilution buffer volume (ul)
-VariableName=ReacVol
-DefaultValue=20
+Description=Wash buffer volume (ul)
+VariableName=tipWashVol
+DefaultValue=50
 ValidMin=10
 ValidMax=100
 

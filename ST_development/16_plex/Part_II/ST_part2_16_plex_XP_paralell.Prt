@@ -45,7 +45,7 @@ SetPlateVolume CLEANING1 0
 SetPlateVolume XP_BEADS $xpTotalBeadVol
 SetPlateVolume ETOH $xpTotalEthanolVol
 SetPlateVolume ELUTION_BUFFER $xpTotalElutionVol
-SetPlateVolume WATER $TotalDilutionVol
+SetPlateVolume WATER $totalTipWashVol
 SetPlateVolume OIL $TotalOilVol
 
 ; Cooling plate
@@ -122,6 +122,8 @@ AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "We
 
 (2-4-2)[ChangeTips]
 AddToLogFile ">(2-4-2)"
+Gval cntIndex Let 1
+Call RinseTips
 Gval cntReserveID Let 2
 Call ChangeReservedTip
 Call PreAspiration
@@ -144,6 +146,8 @@ AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "We
 
 (2-4-5)[ChangeTips]
 AddToLogFile ">(2-4-5)"
+Gval cntIndex Let 2
+Call RinseTips
 Gval cntReserveID Let 1
 Call ChangeReservedTip
 Call PreAspiration
@@ -175,6 +179,8 @@ AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "We
 
 (2-8-1)[ChangeTips]
 AddToLogFile ">(2-8-1)"
+Gval cntIndex Let 1
+Call RinseTips
 Gval cntReserveID Let 2
 Call ChangeReservedTip
 Call PreAspiration
@@ -209,6 +215,8 @@ AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "We
 
 (2-8-5)[ChangeTips]
 AddToLogFile ">(2-8-5)"
+Gval cntIndex Let 2
+Call RinseTips
 Gval cntReserveID Let 1
 Call ChangeReservedTip
 Call PreAspiration
@@ -497,6 +505,8 @@ AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "We
 AddToLogFile ">(4-6-2)"
 AddToLogFile "Change tips for second row"
 RunMessage "Denaturing second sample row"
+Gval cntIndex Let 1
+Call RinseTips
 Gval cntReserveID Let 4
 Call ChangeReservedTip
 Call PreAspiration
@@ -519,6 +529,8 @@ AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "We
 (4-6-5)[ChangeTips]
 AddToLogFile ">(4-6-5)"
 AddToLogFile "Change tips"
+Gval cntIndex Let 2
+Call RinseTips
 Gval cntReserveID Let 3
 Call ChangeReservedTip
 Call PreAspiration
@@ -546,6 +558,8 @@ AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "We
 
 (4-10-1)[ChangeTips]
 AddToLogFile ">(4-10-1)"
+Gval cntIndex Let 1
+Call RinseTips
 Gval cntReserveID Let 4
 Call ChangeReservedTip
 
@@ -582,6 +596,8 @@ AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "We
 
 (4-10-6)[ChangeTips]
 AddToLogFile ">(4-10-6)"
+Gval cntIndex Let 2
+Call RinseTips
 Gval cntReserveID Let 3
 Call ChangeReservedTip
 
@@ -1132,7 +1148,11 @@ Return
 (9-1-14)[RinseTips]
 AddToLogFile ">(9-1-14)"
 ; Make sure tips are empty
-MoveTo WASTE
+If $cntIndex EQ 1
+	MoveTo WASTE
+Else 
+	MoveTo WASTE2
+EndIf
 ActionZ #Z_SPEED_H
 Org P
 SideY% -90 #Y_SPEED_H
@@ -1140,34 +1160,35 @@ SideY% 0 #Y_SPEED_M
 AMove Z 0
 ClearTipVolume
 
-; Calculate mixing volume:
-Gval maxMixVol New @MaxTipVolume
-Gval maxMixVol - $tipWashVol
-Gval maxMixVol - $preAspirationVol
-Gval maxMixVol - 20                     ; A safety margin
 
 ; Repeat washing
 Do $tipWashRepeats
-    Call PreAspiration
-    MoveTo WASH_BUFFER
+    Call PreAspiration2
+    MoveTo WATER $cntIndex
     ActionZ #Z_SPEED_H
     LiqInWell $tipWashVol #P_SPEED_M
     WaitSec $1sec
     AMove Z 0
-    MoveTo WASTE
+    If $cntIndex EQ 1
+		MoveTo WASTE
+	Else 
+		MoveTo WASTE2
+	EndIf
     Do 5
-        LiqIn $maxMixVol #P_SPEED_MH
+        LiqIn #V_MAG_PASS #P_SPEED_MH
         WaitMsec $mixDelay
-        LiqOut $maxMixVol #P_SPEED_MH
+        LiqOut #V_MAG_PASS #P_SPEED_MH
         WaitMsec $mixDelay
     Loop
     ActionZ #Z_SPEED_M
 	LiqOutWell% 75 #Z_SPEED_L
 	AMove Y 17654 W
     LiqOutAll #P_SPEED_L
-    LiqOut $preAspirationVol #P_SPEED_H     ; Blow-out
+	If @TipVolume >= @TipWellVolume
+		LiqOut @TipVolume #P_SPEED_ML
+	Endif
     Org P
-    WaitSec $1sec
+	WaitSec $1sec
     ;SideY% -90 #Y_SPEED_M
     SideY% 0 #Y_SPEED_M
     AMove Z 0

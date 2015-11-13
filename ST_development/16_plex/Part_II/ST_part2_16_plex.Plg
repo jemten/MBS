@@ -41,6 +41,7 @@ Gval cntPostXPTemp New
 Sval cntBufferPos New ELUTION_BUFFER
 Gval cntReserveID New
 Gval TipCount New 0
+Gval cntIndex New 1
 
 Gval IncTime New
 Sval IncType New
@@ -203,14 +204,9 @@ Gval xpTotalEthanolVol Add $XtraDeepWellvol
 Gval totalTipWashVol New $tipWashVol
 Gval totalTipWashVol * $tipWashRepeats
 ; This is the number of times we need to wash the tips:
-Gval totalTipWashVol * 2
+Gval totalTipWashVol * 4
 ; Add some extra:
-Gval totalTipWashVol + 50
-
-; Unclear if the dilution is used in this script
-Gval TotalDilutionVol New $ReacVol
-Gval TotalDilutionVol Mul 4
-Gval TotalDilutionVol Add $XtraDeepWellvol
+Gval totalTipWashVol + 100
  
 ; Total Oil volume 
 Gval TotalOILVol New $OILVol
