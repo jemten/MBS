@@ -327,7 +327,8 @@ Call TipBlowOutAndTouchM
 StartWatch 2
 Gval cntIndex Let 2
 Call RinseTips
-
+Gval cntReserveID Let 1
+Call ChangeReservedTip
 Call PreAspiration2
 GoHome
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
