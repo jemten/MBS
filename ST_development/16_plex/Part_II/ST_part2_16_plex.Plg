@@ -204,7 +204,7 @@ Gval xpTotalEthanolVol Add $XtraDeepWellvol
 Gval totalTipWashVol New $tipWashVol
 Gval totalTipWashVol * $tipWashRepeats
 ; This is the number of times we need to wash the tips:
-Gval totalTipWashVol * 4
+Gval totalTipWashVol * 6
 ; Add some extra:
 Gval totalTipWashVol + 100
  

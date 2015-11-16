@@ -41,6 +41,7 @@ GVal cntPostXPTemp New
 Sval cntBufferPos New ELUTION_BUFFER
 Gval cntReserveID New
 Gval TipCount New 0
+Gval cntIndex New 1
 
 Gval IncTime New
 Sval IncType New
@@ -104,7 +105,6 @@ EndIf
 
 ; ======================================================VOLUMES
 ; Wash solution volume used in subroutine RinseTips
-; Not used in this script
 Gval tipWashVol New 50
 
 ; Extra volume for each row in DeepWellPlate
@@ -194,14 +194,6 @@ Gval xpTotalElutionVol New $xpElutionVol
 Gval xpTotalElutionVol Mul $numberOfXPRuns
 Gval xpTotalElutionVol Add 200
 
-Gval xpTotalWashVol New $xpWashVol
-; Removed the wash 
-; WashVol is used 1 times/XP run: 
-; 1x TipWashRoutine2, (1x WashRoutine)
-Gval xpTotalWashVol * 1
-Gval xpTotalWashVol Mul $numberOfXPRuns
-Gval xpTotalWashVol Add 100
-
 Gval xpTotalEthanolVol New $xpEthanolVol
 Gval xpTotalEthanolVol Mul 3
 ;Gval xpTotalEthanolVol Mul $numberOfXPRuns
@@ -214,16 +206,9 @@ Gval xpTotalSecondEthanolVol Add 1200
 Gval totalTipWashVol New $tipWashVol
 Gval totalTipWashVol * $tipWashRepeats
 ; This is the number of times we need to wash the tips:
-Gval totalTipWashVol * 2
+Gval totalTipWashVol * 6
 ; Add some extra:
-Gval totalTipWashVol + 50
-
-; Use the same wash buffer row as CA uses
-Gval xpTotalWashVol Add $totalTipWashVol 
-
-Gval TotalDilutionVol New $ReacVol
-Gval TotalDilutionVol Mul 4
-Gval TotalDilutionVol Add $XtraDeepWellvol
+Gval totalTipWashVol + 100
  
 ; Total OilOilOil volume 
 Gval TotalOILVol New $OILVol

@@ -361,7 +361,7 @@ VariableName=debugMode
 Option=0;Normal
 Option=1;Instrument testing
 Option=2;Software simulation
-DefaultValue=2
+DefaultValue=0
 
 [DEBUG2]
 Type=RadioButton

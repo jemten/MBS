@@ -48,7 +48,7 @@ SetPlateVolume XP_BEADS $xpTotalBeadVol
 SetPlateVolume ETOH $xpTotalEthanolVol
 SetPlateVolume ETOH2 $xpSecondEthanolVol
 SetPlateVolume ELUTION_BUFFER $xpTotalElutionVol
-SetPlateVolume WATER $TotalDilutionVol
+SetPlateVolume WATER $totalTipWashVol
 SetPlateVolume OIL $TotalOilVol
 
 ; Cooling plate
@@ -270,6 +270,8 @@ Gval Tempo1 Let @RESULT
 Gval Tempo2 Let $SSTime
 Gval Tempo2 Sub $Tempo1
 AddToLogFile $Tempo2 " seconds remaining"
+Gval cntIndex Let 1
+Call RinseTips
 ReturnTip
 GoHome
 Call HomeMotors
@@ -323,10 +325,9 @@ AddToLogFile "Dispensing Blunting mix"
 MoveTo BLUNTING_REACTION 2
 Call TipBlowOutAndTouchM
 StartWatch 2
-ReturnTip
-GetReserveTip 1
-AMove P 0 W
-Org P
+Gval cntIndex Let 2
+Call RinseTips
+
 Call PreAspiration2
 GoHome
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
@@ -354,7 +355,8 @@ Call TipBlowOutAndTouchM
 Call PreAspiration2
 Call GeneralMix
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-ReturnTip
+Gval cntIndex Let 1
+Call RinseTips
 
 (2-10-1)[BluntingIncubation2]
 AddToLogFile ">(2-10-1)"
@@ -396,6 +398,8 @@ AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "We
 
 (3-1-1)[GetReseveTip1]
 AddToLogFile ">(3-1-1)"
+Gval cntIndex Let 2
+Call RinseTips
 Gval cntReserveID Let 1
 Call ChangeReservedTip
 
@@ -651,6 +655,8 @@ Call PreAspiration2
 AddToLogFile ">(4-12-1)"
 AddToLogFile "ReadyTips"
 RunMessage "Changing Tips"
+Gval cntIndex Let 1
+Call RinseTips
 ReturnTip
 Call GetNewTips
 GoHome
@@ -715,6 +721,8 @@ Call PreAspiration2
 
 (5-1-1)[GetReseveTip1]
 AddToLogFile ">(5-1-1)"
+Gval cntIndex Let 2
+Call RinseTips
 Gval cntReserveID Let 3
 Call ChangeReservedTip
 
@@ -1112,7 +1120,11 @@ Return
 (9-1-14)[RinseTips]
 AddToLogFile ">(9-1-14)"
 ; Make sure tips are empty
-MoveTo WASTE
+If $cntIndex EQ 1
+	MoveTo WASTE
+Else 
+	MoveTo WASTE2
+EndIf
 ActionZ #Z_SPEED_H
 Org P
 SideY% -90 #Y_SPEED_H
@@ -1120,38 +1132,35 @@ SideY% 0 #Y_SPEED_M
 AMove Z 0
 ClearTipVolume
 
-; Calculate mixing volume:
-Gval maxMixVol New @MaxTipVolume
-Gval maxMixVol - $tipWashVol
-Gval maxMixVol - $preAspirationVol
-Gval maxMixVol - 20                     ; A safety margin
-
-; Repeat washing
-Do $tipWashRepeats
-    Call PreAspiration
-    MoveTo WASH_BUFFER
-    ActionZ #Z_SPEED_H
-    LiqInWell $tipWashVol #P_SPEED_M
-    WaitSec $1sec
-    AMove Z 0
-    MoveTo WASTE
-    Do 5
-        LiqIn $maxMixVol #P_SPEED_MH
-        WaitMsec $mixDelay
-        LiqOut $maxMixVol #P_SPEED_MH
-        WaitMsec $mixDelay
-    Loop
-    ActionZ #Z_SPEED_M
-	LiqOutWell% 75 #Z_SPEED_L
-	AMove Y 17654 W
-    LiqOutAll #P_SPEED_L
-    LiqOut $preAspirationVol #P_SPEED_H     ; Blow-out
-    Org P
-    WaitSec $1sec
-    ;SideY% -90 #Y_SPEED_M
-    SideY% 0 #Y_SPEED_M
-    AMove Z 0
+Call PreAspiration2
+MoveTo WATER $cntIndex
+ActionZ #Z_SPEED_H
+LiqInWell $tipWashVol #P_SPEED_M
+WaitSec $1sec
+AMove Z 0
+If $cntIndex EQ 1
+	MoveTo WASTE
+Else 
+	MoveTo WASTE2
+EndIf
+Do 5
+    LiqIn #V_MAG_PASS #P_SPEED_MH
+    WaitMsec $mixDelay
+    LiqOut #V_MAG_PASS #P_SPEED_MH
+    WaitMsec $mixDelay
 Loop
+ActionZ #Z_SPEED_M
+LiqOutWell% 75 #Z_SPEED_L
+AMove Y 17654 W
+LiqOutAll #P_SPEED_L
+If @TipVolume >= @TipWellVolume
+	LiqOut @TipVolume #P_SPEED_ML
+Endif
+Org P
+WaitSec $1sec
+;SideY% -90 #Y_SPEED_M
+SideY% 0 #Y_SPEED_M
+AMove Z 0
 
 ; Air-dry tips
 ;Gval maxMixVol Let @MaxTipVolume
@@ -1905,28 +1914,16 @@ EndIf
 AddToLogFile ">(10-5-1)"
 AddToLogFile "Going for Sample 2"
 If $DispIndex EQ 1
-	MoveTo WATER $DispIndex
-	ActionZ #Z_SPEED_H W
-	Do 3 
-		LiqIn 50 #P_SPEED_M
-		LiqOut 50 #P_SPEED_M
-	Loop
-	WaitSec $1sec
-	Call ClearTipsXP
+	Gval cntIndex Let 1
+	Call RinseTips
 	Gval DispIndex Inc
 	Gval cntReserveID Let $cntTipID2
 	Call ChangeReservedTip
 	Call PreAspiration2
-	GoBack GetAllBeads
+	GoBack GetAllBeads 
 EndIf
-MoveTo WATER $DispIndex
-ActionZ #Z_SPEED_H W
-Do 3 
-	LiqIn 50 #P_SPEED_M
-	LiqOut 50 #P_SPEED_M
-Loop
-WaitSec $1sec
-Call ClearTipsXP
+Gval cntIndex Let 2
+Call RinseTips
 Gval DispIndex Let 1
 Gval cntReserveID Let $cntTipID1
 Call ChangeReservedTip
@@ -1967,14 +1964,8 @@ If @Result < $xpBeadIncTime
 			Call PreAspiration2
 		EndIf
 		If $DispIndex EQ 1
-			MoveTo WATER $DispIndex
-			ActionZ #Z_SPEED_H W
-			Do 3 
-				LiqIn 50 #P_SPEED_M
-				LiqOut 50 #P_SPEED_M
-			Loop
-			WaitSec $1sec
-			Call ClearTipsXP
+			Gval cntIndex Let 1
+			Call RinseTips
 			Gval DispIndex Inc
 			Gval cntReserveID Let $cntTipID2
 			Call ChangeReservedTip
@@ -1992,14 +1983,8 @@ If @Result < $xpBeadIncTime
 				Call ClearTipsXP
 				Call PreAspiration2
 			EndIf
-			MoveTo WATER $DispIndex
-			ActionZ #Z_SPEED_H W
-			Do 3 
-				LiqIn 50 #P_SPEED_M
-				LiqOut 50 #P_SPEED_M
-			Loop
-			WaitSec $1sec
-			Call ClearTipsXP
+			Gval cntIndex Let 1
+			Call RinseTips
 		EndIf
 		Gval DispIndex Let 1
 		Gval cntReserveID Let $cntTipID1
