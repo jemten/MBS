@@ -732,7 +732,7 @@ RunMessage "Getting sample 1 under oil"
 ; Variables that must be set
 ; $AqPhase = Total volume except oil
 ; $XtraAquaAsp = Extra asp volume to get all 
-MoveTo CDNA
+MoveTo CDNA 1
 Sval AspPosition Let CDNA
 Sval DispPosition Let POST_CDNA
 Gval AqPhase Let @WellVolume
@@ -741,7 +741,7 @@ Gval AspIndex Let 1
 Gval DispIndex Let 1
 AddToLogFile "AqPhase: " $AqPhase "Oilphase: " $OILVol
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-Gval XtraAquaAsp Let 0
+Gval XtraAquaAsp Let 1
 Call GetUnderOilRoutine2
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
 
@@ -766,7 +766,7 @@ AddToLogFile $Tempo2 " seconds remaining"
 GoHome
 WaitTime 2 $CDNATime1
 
-(4-19-1)[GetUnderOil]
+(4-19-1)[GetUnderOil2]
 AddToLogFile ">(4-19-1)"
 AddToLogFile "Getting sample 2 under oil"
 RunMessage "Getting sample 2 under oil"
@@ -776,7 +776,7 @@ RunMessage "Getting sample 2 under oil"
 ; Variables that must be set
 ; $AqPhase = Total volume except oil
 ; $XtraAquaAsp = Extra asp volume to get all 
-MoveTo CDNA
+MoveTo CDNA 2
 Sval AspPosition Let CDNA
 Sval DispPosition Let POST_CDNA
 Gval AqPhase Let @WellVolume
@@ -785,7 +785,7 @@ Gval AspIndex Let 2
 Gval DispIndex Let 2
 AddToLogFile "AqPhase: " $AqPhase "Oilphase: " $OILVol
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-Gval XtraAquaAsp Let 0
+Gval XtraAquaAsp Let 1
 Call GetUnderOilRoutine2
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
 
@@ -1344,6 +1344,7 @@ ActionZ #Z_SPEED_H W
 LiqIn 1 #P_SPEED_M
 
 MoveTo $AspPosition $AspIndex
+AddToLogFile "THIS IS ASP POSITION UNDER OIL: " $AspPosition $AspIndex
 ActionZ #Z_SPEED_H W
 
 Gval Tempo3 Let $AqPhase

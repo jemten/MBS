@@ -217,7 +217,7 @@ AddToLogFile "Transfering SSS to blunting mix"
 RunMessage "Transfering SSS to blunting mix"
 Call GetNewTips
 Call PreAspiration2
-MoveTo SECOND_STRAND_SYNTHESIS
+MoveTo SECOND_STRAND_SYNTHESIS 1
 Sval AspPosition Let SECOND_STRAND_SYNTHESIS
 Gval AspIndex Let 1
 Sval DispPosition Let BLUNTING_MIX
