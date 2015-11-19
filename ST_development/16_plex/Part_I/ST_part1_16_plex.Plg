@@ -182,6 +182,7 @@ Gval mixCount New
 ; Bead resuspension mixes 
 Gval xpStirUps New 35
 
+Gval nTipwashes New 0
 ; ======================================================TOTAL_VOLUMES
 
 Gval xpTotalBeadVol New $xpBeadVol
@@ -204,9 +205,9 @@ Gval xpTotalSecondEthanolVol Add 1200
 
 ; The wash buffer used for tip washing outside of CA protocol
 Gval totalTipWashVol New $tipWashVol
-Gval totalTipWashVol * $tipWashRepeats
+;Gval totalTipWashVol * $tipWashRepeats
 ; This is the number of times we need to wash the tips:
-Gval totalTipWashVol * 6
+Gval totalTipWashVol * 8
 ; Add some extra:
 Gval totalTipWashVol + 100
  

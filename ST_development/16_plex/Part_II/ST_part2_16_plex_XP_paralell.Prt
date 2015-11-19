@@ -895,6 +895,7 @@ EndInfoBox
 UVOff
 AddToLogFile "Finished UV clean"
 AddToLogFile "Tips used: " $TipCount 
+AddToLogFile "Number of tipwashes: " $nTipwashes 
 END
 
 ; ======================================================== STOP
@@ -1147,6 +1148,7 @@ Return
 
 (9-1-14)[RinseTips]
 AddToLogFile ">(9-1-14)"
+Gval nTipwashes Inc
 ; Make sure tips are empty
 If $cntIndex EQ 1
 	MoveTo WASTE
