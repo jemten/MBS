@@ -281,7 +281,7 @@ _AlarmLevel $tempDif
 ;WaitLoop
 WaitSec  1
 _ChkAlarm  2
-IfGoto NE 0 ;
+IfGoto NE 0 ;WaitLoop
 AddToLogFile "Temperature reached"
 
 (3-3-1)[AsprRNAMix]

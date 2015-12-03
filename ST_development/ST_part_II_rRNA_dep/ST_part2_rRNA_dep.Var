@@ -359,6 +359,14 @@ DefaultValue=1
 ValidMin=1
 ValidMax=10
 
+[XP9]
+Type=Hidden
+Description=Dilution buffer volume (ul)
+VariableName=ReacVol
+DefaultValue=20
+ValidMin=10
+ValidMax=100
+
 
 ; ======================================================DEBUG_VARS
 

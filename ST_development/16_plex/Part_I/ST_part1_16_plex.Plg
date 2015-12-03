@@ -90,7 +90,7 @@ EndIf
 Gval SSTime * $secToMinConv
 Gval BluntingTime * $secToMinConv
 Gval IVTTime * $secToMinConv
-Gval IVTTime * $secToMinConv
+;Gval IVTTime * $secToMinConv
 Gval xpBeadIncTime * $secToMinConv
 Gval xpElutionTime * $secToMinConv
 Gval DryTime * $secToMinConv
@@ -124,6 +124,9 @@ Gval GobackDone New 1
 Gval TimeCheck New
 Gval cntTipID1 New 10
 Gval cntTipID2 New 20
+Gval BeadMixes New
+Gval BeadMixesDone New
+Gval BeadMixInterval New
 
 
 ; Total number of XP purifications in the protocol

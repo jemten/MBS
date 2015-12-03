@@ -307,7 +307,6 @@ ValidMin=1
 ValidMax=10
 
 [XP7]
-;Unclear if this is used in the current script
 Type=Hidden
 Description=Dilution buffer volume (ul)
 VariableName=ReacVol
