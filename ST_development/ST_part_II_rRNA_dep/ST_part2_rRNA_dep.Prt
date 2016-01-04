@@ -252,7 +252,7 @@ AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "We
 Gval XtraAquaAsp Let 1
 Call GetUnderOilRoutine2
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-_SetTemp 2 $rRNAdepTemp
+_SetTemp 2 $rRNAdenTemp
 
 (2-20-1)[TipDiscard]
 AddToLogFile ">(2-20-1)"
@@ -277,7 +277,7 @@ Call PreAspiration
 AddToLogFile ">(3-2-1)"
 AddToLogFile "Waiting for heatblock to reach " $rRNAdepTemp
 RunMessage "Waiting for heatblock to reach " $rRNAdepTemp
-_AlarmLevel $tempDif
+_AlarmLevel $tempDif	
 ;WaitLoop
 WaitSec  1
 _ChkAlarm  2
@@ -298,8 +298,8 @@ AddToLogFile ">(3-4-1)"
 MoveTo RRNA_DEPLETION
 Call TipBlowOutAndTouchAndMix
 StartWatch 1
-AddToLogFile "rRNA depletion started"
-RunMessage "rRNA depletion started"
+AddToLogFile "rRNA denaturation started"
+RunMessage "rRNA denaturation started"
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
 
 (3-5-1)[ReadyTips]
@@ -325,8 +325,29 @@ Call HomeMotors
 
 (3-8-1)[rRNAdep_Incubation]
 AddToLogFile ">(3-8-1)"
-Gval IncTime Let $rRNAdepTime
-Sval IncType Let "rRNA depletion" 
+Gval IncTime Let $rRNAdenTime
+Sval IncType Let "rRNA denaturation" 
+Call Incubation
+AddToLogFile "rRNA denaturation finished"
+RunMessage "rRNA denaturation finished"
+_SetTemp 2 $rRNAdepTemp
+
+(3-8-2)[CheckTemp]
+AddToLogFile ">(3-8-2)"
+AddToLogFile "Waiting for heatblock to reach " $rRNAdepTemp
+RunMessage "Waiting for heatblock to reach " $rRNAdepTemp
+_AlarmLevel $tempDif	
+;WaitLoop
+WaitSec  1
+_ChkAlarm  2
+IfGoto NE 0 ;WaitLoop
+AddToLogFile "Temperature reached"
+StartWatch 1
+
+(3-8-3)[rRNAdep_Incubation]
+AddToLogFile ">(3-8-3)"
+Gval IncTime Let $rRNAdenTime
+Sval IncType Let "rRNA denaturation" 
 Call Incubation
 AddToLogFile "rRNA depletion finished"
 RunMessage "rRNA depletion finished"

@@ -207,17 +207,33 @@ ValidMax=10
 Type=String
 Description=rRNA depletion temp (C)
 VariableName=rRNAdepTemp
-DefaultValue=37
+DefaultValue=45
 ValidMin=25
-ValidMax=45
+ValidMax=60
 
 [RD3]
 Type=String
 Description=rRNA depletion time (min)
 VariableName=rRNAdepTime
 DefaultValue=30
-ValidMin=10
+ValidMin=1
 ValidMax=60
+
+[RD4]
+Type=String
+Description=rRNA denaturation time (min)
+VariableName=rRNAdenTime
+DefaultValue=2
+ValidMin=1
+ValidMax=60
+
+[RD5]
+Type=String
+Description=rRNA denaturation temp (C)
+VariableName=rRNAdenTemp
+DefaultValue=70
+ValidMin=4
+ValidMax=95
 
 ; ====================================================== CDNA SYNTHESIS
 

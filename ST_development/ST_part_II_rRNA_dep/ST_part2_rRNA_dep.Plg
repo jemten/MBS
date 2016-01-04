@@ -81,6 +81,10 @@ ElseIf $debugMode = 2
 EndIf
 
 Gval CDNATime2 New 20
+; If trying out script with short cDNA inc time
+If $CDNATime LE 5
+	Gval CDNATime2 Let 1
+EndIf	
 
 Gval DenatTime * $secToMinConv
 Gval SSDenatTime * $secToMinConv
@@ -91,6 +95,7 @@ Gval xpBeadIncTime * $secToMinConv
 Gval xpElutionTime * $secToMinConv
 Gval DryTime * $secToMinConv
 Gval rRNAdepTime * $secToMinConv
+Gval rRNAdenTime * $secToMinConv
 
 Gval CDNATime1 New $CDNATime
 Gval CDNATime1 Sub $CDNATime2
@@ -103,6 +108,7 @@ If $debugMode = 1
 	Gval LigTemp Let $startTemp
 	Gval EnzymeTemp Let $startTemp
 	Gval rRNAdepTemp Let $startTemp
+	Gval rRNAdenTemp Let $startTemp
 EndIf
 
 ; ======================================================VOLUMES
