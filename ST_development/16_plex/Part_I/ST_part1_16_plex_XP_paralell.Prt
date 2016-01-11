@@ -848,26 +848,26 @@ If $doHold = 1
 EndIf
 _SetTemp 1 $startTemp
 _SetTemp 2 $startTemp
-;END
+END
 
-(5-6-1)[UVClean]
-AddToLogFile ">(5-6-1)"
-BeginInfoBox "Clear robot" 0
-        Label "Remove plates and clean out waste containers." C
-		Label ""
-		Label "When done click OK to switch on the UV light." C
-EndInfoBox
-UVOn
-AddToLogFile "Starting UV Clean"
-BeginInfoBox "UV Clean" 0
-        Label "Decontaminating the robot." C 
-		Label ""
-		Label "When done click OK to switch off UV the light." C
-EndInfoBox
-UVOff
-AddToLogFile "Finished UV clean"
-AddToLogFile "Tips used: " $TipCount 
-AddToLogFile "Number of tipwashes: " $nTipwashes 
+;(5-6-1)[UVClean]
+;AddToLogFile ">(5-6-1)"
+;BeginInfoBox "Clear robot" 0
+;       Label "Remove plates and clean out waste containers." C
+;		Label ""
+;		Label "When done click OK to switch on the UV light." C
+;EndInfoBox
+;UVOn
+;AddToLogFile "Starting UV Clean"
+;BeginInfoBox "UV Clean" 0
+;        Label "Decontaminating the robot." C 
+;		Label ""
+;		Label "When done click OK to switch off UV the light." C
+;EndInfoBox
+;UVOff
+;AddToLogFile "Finished UV clean"
+;AddToLogFile "Tips used: " $TipCount 
+;AddToLogFile "Number of tipwashes: " $nTipwashes 
 END
 
   
