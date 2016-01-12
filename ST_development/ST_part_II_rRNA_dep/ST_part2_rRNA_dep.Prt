@@ -231,6 +231,7 @@ Call Incubation
 AddToLogFile ">(2-18-2)"
 Call GetNewTips
 Call PreAspiration
+_SetTemp 2 $rRNAdenTemp
 
 (2-19-1)[GetUnderOil]
 AddToLogFile ">(2-19-1)"
@@ -252,7 +253,6 @@ AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "We
 Gval XtraAquaAsp Let 1
 Call GetUnderOilRoutine2
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-_SetTemp 2 $rRNAdenTemp
 
 (2-20-1)[TipDiscard]
 AddToLogFile ">(2-20-1)"
@@ -346,8 +346,8 @@ StartWatch 1
 
 (3-8-3)[rRNAdep_Incubation]
 AddToLogFile ">(3-8-3)"
-Gval IncTime Let $rRNAdenTime
-Sval IncType Let "rRNA denaturation" 
+Gval IncTime Let $rRNAdepTime
+Sval IncType Let "rRNA depletion" 
 Call Incubation
 AddToLogFile "rRNA depletion finished"
 RunMessage "rRNA depletion finished"
