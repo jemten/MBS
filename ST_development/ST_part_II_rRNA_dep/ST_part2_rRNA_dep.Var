@@ -235,6 +235,14 @@ DefaultValue=70
 ValidMin=4
 ValidMax=95
 
+[RD6]
+Type=String
+Description=EDTA (40 mM) vol (ul)
+VariableName=EDTAVol
+DefaultValue=10
+ValidMin=2
+ValidMax=10
+
 ; ====================================================== CDNA SYNTHESIS
 
 [DST3]

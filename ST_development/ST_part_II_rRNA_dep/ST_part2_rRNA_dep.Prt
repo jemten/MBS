@@ -55,6 +55,7 @@ SetPlateVolume T4MIX $T4MixVol
 SetPlateVolume RRNA_DEP_MIX $rRNAdepMixVol
 SetPlateVolume SSADAPTER $SSAdapterVol
 SetPlateVolume SSMIX $SSMixVol
+SetPlateVolume EDTA $EDTAvol
 SetPlateVolume POST_CDNA 0
 SetPlateVolume FINISHED 0
 
@@ -357,6 +358,12 @@ _SetTemp 2 $startTemp
 AddToLogFile ">(3-9-1)"
 Call GetNewTips
 Call PreAspiration
+;Decreasing the temperature a bit prior to aspiration
+_AlarmLevel 10	
+;WaitLoop
+WaitSec  1
+_ChkAlarm  2
+IfGoto NE 0 ;WaitLoop
 
 (3-10-1)[GetUnderOil]
 AddToLogFile ">(3-10-1)"
@@ -370,7 +377,7 @@ RunMessage "Getting sample under oil"
 ; $XtraAquaAsp = Extra asp volume to get all 
 MoveTo RRNA_DEPLETION
 Sval AspPosition Let RRNA_DEPLETION
-Sval DispPosition Let POST_RRNA_DEPLETION
+Sval DispPosition Let EDTA
 Gval AqPhase Let @WellVolume
 Gval AqPhase Sub $OILVol
 AddToLogFile "AqPhase: " $AqPhase "Oilphase: " $OILVol
@@ -404,13 +411,13 @@ Call PreAspiration
 (4-3-1)[StartXpPurification]
 AddToLogFile ">(4-3-1)"
 AddToLogFile "Starting Agencourt Purification"
-Sval cntXPStartingPos Let POST_RRNA_DEPLETION
+Sval cntXPStartingPos Let EDTA
 Sval cntXPWorkingPos Let POST_RRNA_DEPLETION
 Sval cntXPElutionPos Let SSADAPTER
 Gval cntXPBeadVol Let $Bead1Vol
 Gval cntXPElutionVol Let $xpElutionVol
 Gval cntPostXPTemp Let $SSDenatTemp
-Gval cntNoTransfer Let 1
+Gval cntNoTransfer Let 0
 Call AgencourtPurification
 ;Set store temp while waiting for user
 Call ReturnTips 
