@@ -37,7 +37,7 @@ Sval cntXPElutionPos New
 Gval cntXPBeadVol New
 Gval cntXPElutionVol New
 Gval cntNoTransfer New
-GVal cntPostXPTemp New
+Gval cntPostXPTemp New
 Sval cntBufferPos New ELUTION_BUFFER
 Gval cntReserveID New
 Gval TipCount New 0
@@ -68,6 +68,8 @@ Gval 1sec New 1
 Gval 2sec New 2
 Gval 3sec New 3
 Gval 10sec New 10
+Gval 30min New 30
+Gval 60min New 60
 If $debugMode = 2
     Gval 500msec Let 0
     Gval 1sec Let 0
@@ -90,11 +92,14 @@ EndIf
 Gval SSTime * $secToMinConv
 Gval BluntingTime * $secToMinConv
 Gval IVTTime * $secToMinConv
-;Gval IVTTime * $secToMinConv
+Gval IVTTime * $secToMinConv
 Gval xpBeadIncTime * $secToMinConv
 Gval xpElutionTime * $secToMinConv
 Gval DryTime * $secToMinConv
 Gval DelayTime * $secToMinConv
+Gval 30min * $secToMinConv
+Gval 60min * $secToMinConv
+
 
 ; To skip heat/cool times when testing
 If $debugMode = 1
@@ -192,6 +197,7 @@ Gval xpTotalBeadVol New $xpBeadVol
 ;Gval xpTotalBeadVol Mul $numberOfXPRuns
 Gval xpTotalBeadVol Add $xpBeadVol2
 Gval xpTotalBeadVol Mul 2
+Gval xpTotalBeadVol Add $XtraDeepWellvol
 Gval xpTotalBeadVol Add $XtraDeepWellvol
 
 Gval xpTotalElutionVol New $xpElutionVol

@@ -58,6 +58,7 @@ SetPlateVolume FINISHED 0
 
 (1-4-1)[ReadyTips]
 AddToLogFile ">(1-4-1)"
+ReserveTip Standard 99
 ReserveTip STANDARD 1
 ReserveTip STANDARD 2
 GetReserveTip 1
@@ -1214,11 +1215,24 @@ Return
 AddToLogFile ">(9-1-15)"
 ;Var IncTime (seconds) must be set before calling
 ;Str IncType must be set before calling
+Gval BeadMixes Let $IncTime
+Gval BeadMixes \ $60min
+Gval BeadMixInterval Let $30min
+Gval BeadMixesDone Let 0
+
 ;IncWait
 WaitSec 1
 PassTime 1
 Gval Tempo1 Let @RESULT 
 IfGoto GE $IncTime ;Exit
+If $BeadMixesDone LT $BeadMixes
+	If $Tempo1 GT $BeadMixInterval
+		AddToLogFile "Calling beadmix routine"
+		Call BeadMixRoutine
+		Gval BeadMixesDone Inc
+		Gval BeadMixInterval Add $60min
+	EndIf
+EndIf
 Gval Tempo1 Sub $IncTime
 Gval Tempo1 \ -1
 Gval Sec Let $Tempo1
@@ -1718,6 +1732,81 @@ GetReserveTip $cntReserveID
 Amove P 0 W 
 Org P
 Return
+
+(9-8-1)[BeadMixRoutine]
+AddToLogFile ">(9-8-1)"
+AddToLogFile "Keeping beads mixed"
+If @MaxTipVolume NE 0
+	ReturnTip
+	Gval tempVar Let 1
+EndIf
+GetReserveTip 99
+Amove P 0 W 
+Org P
+Call PreAspiration2
+MoveTo XP_BEADS
+Gval xpTemp1 Let @WellVolume
+Gval xpTemp1 * 0.7
+If $xpTemp1 > $xpBeadMixVol
+    Gval xpTemp1 Let $xpBeadMixVol
+EndIf
+Gval Tempo4 Let $xpTemp1
+Gval Tempo4 Mul 0.9 
+RScanZ $scanDist #Z_SPEED_L
+RMove Z -300
+LiqIn $xpTemp1 #P_SPEED_ML
+WaitMsec $mixDelay
+Do 15
+    WaitMsec $mixDelay1
+    LiqOut $Tempo4 #P_SPEED_M
+    WaitMsec $500msec
+    LiqIn $Tempo4 #P_SPEED_MH
+Loop
+LiqOut $Tempo4 #P_SPEED_M
+WaitSec $1sec
+Call ClearTipsXP
+Call PreAspiration2
+
+MoveTo BeadTipWash
+ActionZ #Z_SPEED_H
+LiqInWell 50 #P_SPEED_M
+WaitSec $1sec
+AMove Z 0
+If $cntIndex EQ 1
+	MoveTo WASTE
+Else 
+	MoveTo WASTE2
+EndIf
+Do 5
+    LiqIn #V_MAG_PASS #P_SPEED_MH
+    WaitMsec $mixDelay
+    LiqOut #V_MAG_PASS #P_SPEED_MH
+    WaitMsec $mixDelay
+Loop
+ActionZ #Z_SPEED_M
+LiqOutWell% 75 #Z_SPEED_L
+AMove Y 17654 W
+LiqOutAll #P_SPEED_L
+If @TipVolume >= @TipWellVolume
+	LiqOut @TipVolume #P_SPEED_ML
+Endif
+Org P
+WaitSec $1sec
+;SideY% -90 #Y_SPEED_M
+SideY% 0 #Y_SPEED_M
+AMove Z 0
+ReturnTip
+If $tempVar EQ 1
+	GetReserveTip $cntReserveID
+	Amove P 0 W 
+	Org P
+	Gval tempVar Let 0
+EndIf
+GoHome
+OrgAll
+Return
+
+
 
 
 ; ====================================================== Agencourt_PURIF

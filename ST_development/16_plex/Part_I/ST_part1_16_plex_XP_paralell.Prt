@@ -1191,10 +1191,8 @@ AddToLogFile ">(9-1-15)"
 ;Var IncTime (seconds) must be set before calling
 ;Str IncType must be set before calling
 Gval BeadMixes Let $IncTime
-;Gval Tempo2 \ 3600
-Gval BeadMixes \ 60
-;Gval mixInterval Let 1800
-Gval BeadMixInterval Let 30
+Gval BeadMixes \ $60min
+Gval BeadMixInterval Let $30min
 Gval BeadMixesDone Let 0
 
 ;IncWait
@@ -1207,8 +1205,7 @@ If $BeadMixesDone LT $BeadMixes
 		AddToLogFile "Calling beadmix routine"
 		Call BeadMixRoutine
 		Gval BeadMixesDone Inc
-		;Gval mixInterval Add 3600
-		Gval BeadMixInterval Add 60
+		Gval BeadMixInterval Add $60min
 	EndIf
 EndIf
 Gval Tempo1 Sub $IncTime
@@ -1737,7 +1734,7 @@ RScanZ $scanDist #Z_SPEED_L
 RMove Z -300
 LiqIn $xpTemp1 #P_SPEED_ML
 WaitMsec $mixDelay
-Do $xpStirUps
+Do 15
     WaitMsec $mixDelay1
     LiqOut $Tempo4 #P_SPEED_M
     WaitMsec $500msec
@@ -2081,7 +2078,7 @@ If @Result < $xpBeadIncTime
 				Call ClearTipsXP
 				Call PreAspiration2
 			EndIf
-			Gval cntIndex Let 1
+			Gval cntIndex Let 2
 			Call RinseTips
 		EndIf
 		Gval DispIndex Let 1

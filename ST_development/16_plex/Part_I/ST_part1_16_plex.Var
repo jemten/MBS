@@ -236,7 +236,7 @@ Description=IVT incubation time (hours)
 VariableName=IVTTime
 DefaultValue=14
 ValidMin=1
-ValidMax=20
+ValidMax=200
 
 [IVT4]
 Type=Hidden

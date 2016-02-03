@@ -67,6 +67,8 @@ Gval 1sec New 1
 Gval 2sec New 2
 Gval 3sec New 3
 Gval 10sec New 10
+Gval 30min New 30
+Gval 60min New 60
 If $debugMode = 2
     Gval 500msec Let 0
     Gval 1sec Let 0
@@ -96,6 +98,8 @@ Gval CDNATime2 * $secToMinConv
 Gval xpBeadIncTime * $secToMinConv
 Gval xpElutionTime * $secToMinConv
 Gval DryTime * $secToMinConv
+Gval 30min * $secToMinConv
+Gval 60min * $secToMinConv
 
 Gval CDNATime1 New $CDNATime
 Gval CDNATime1 Sub $CDNATime2
@@ -126,6 +130,9 @@ Gval GobackDone New 1
 Gval TimeCheck New
 Gval cntTipID1 New 10
 Gval cntTipID2 New 20
+Gval BeadMixes New
+Gval BeadMixesDone New
+Gval BeadMixInterval New
 
 
 Sval tempString1 New
@@ -187,6 +194,7 @@ Gval nTipwashes New 0
 Gval xpTotalBeadVol New $Bead1Vol
 Gval xpTotalBeadVol Add $Bead2Vol
 Gval xpTotalBeadVol Mul 2
+Gval xpTotalBeadVol Add $XtraDeepWellvol
 Gval xpTotalBeadVol Add $XtraDeepWellvol
 
 Gval xpTotalElutionVol New $xpElutionVol
