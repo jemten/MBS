@@ -154,7 +154,7 @@ ValidMax=35
 Type=Hidden
 Description=Adapter volume (ul)
 VariableName=AdapterVol
-DefaultValue=11.5
+DefaultValue=10.5
 ValidMin=3
 ValidMax=25
 
