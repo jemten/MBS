@@ -1755,7 +1755,7 @@ Gval Tempo4 Mul 0.9
 ActionZ #Z_SPEED_H
 If @WellVolume GE 350
 	RScanZ $scanDist #Z_SPEED_L
-	RMove Z -1000
+	RMove Z -500
 Else
 	RScanZ $scanDist #Z_SPEED_L
 	RMove Z -300
@@ -1763,7 +1763,7 @@ EndIf
 WaitMsec $500msec
 LiqIn $xpTemp1 #P_SPEED_ML
 WaitMsec $mixDelay
-Do 15
+Do 20
     WaitMsec $mixDelay1
     LiqOut $Tempo4 #P_SPEED_M
     WaitMsec $500msec
