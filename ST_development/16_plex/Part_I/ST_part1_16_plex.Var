@@ -311,7 +311,7 @@ ValidMax=120
 Type=String
 Description=Bead elution time (min)
 VariableName=xpElutionTime
-DefaultValue=3
+DefaultValue=5
 ValidMin=1
 ValidMax=10
 

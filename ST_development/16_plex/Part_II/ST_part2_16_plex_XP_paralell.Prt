@@ -1752,8 +1752,15 @@ If $xpTemp1 > $xpBeadMixVol
 EndIf
 Gval Tempo4 Let $xpTemp1
 Gval Tempo4 Mul 0.9 
-RScanZ $scanDist #Z_SPEED_L
-RMove Z -300
+ActionZ #Z_SPEED_H
+If @WellVolume GE 350
+	RScanZ $scanDist #Z_SPEED_L
+	RMove Z -1000
+Else
+	RScanZ $scanDist #Z_SPEED_L
+	RMove Z -300
+EndIf
+WaitMsec $500msec
 LiqIn $xpTemp1 #P_SPEED_ML
 WaitMsec $mixDelay
 Do 15

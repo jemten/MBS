@@ -198,7 +198,7 @@ Gval xpTotalBeadVol New $xpBeadVol
 Gval xpTotalBeadVol Add $xpBeadVol2
 Gval xpTotalBeadVol Mul 2
 Gval xpTotalBeadVol Add $XtraDeepWellvol
-Gval xpTotalBeadVol Add $XtraDeepWellvol
+Gval xpTotalBeadVol Add 40
 
 Gval xpTotalElutionVol New $xpElutionVol
 Gval xpTotalElutionVol Mul $numberOfXPRuns

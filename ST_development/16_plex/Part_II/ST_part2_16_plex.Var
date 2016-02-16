@@ -54,7 +54,7 @@ ValidMax=50
 Type=Hidden
 Description=Mixing pipetting delay (ms)
 VariableName=mixDelay
-DefaultValue=100
+DefaultValue=400
 ValidMin=50
 ValidMax=1000
 
