@@ -833,10 +833,14 @@ Gval AspIndex Let 1
 Gval DispIndex Let 1
 Call AgencourtPurification
 Org P W
-Call HomeMotors
+GoHome
 
 (5-6-1)[EndOfProtocol]
 AddToLogFile ">(5-6-1)"
+GetReserveTip 99
+DustTip
+GoHome
+Call HomeMotors
 ; Report to log file:
 Gval endTimeS New
 Gval endTimeM New

@@ -804,10 +804,14 @@ AddToLogFile "Elution volume" $cntXPElutionVol "ul"
 Call AgencourtPurification
 ;Set store temp while waiting for user
 Org P W
-Call HomeMotors
+GoHome
 
 (5-5-1)[EndOfProtocol]
 AddToLogFile ">(5-5-1)"
+GetReserveTip 99
+DustTip
+GoHome
+Call HomeMotors
 ; Report to log file:
 Gval endTimeS New
 Gval endTimeM New
