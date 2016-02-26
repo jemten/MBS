@@ -28,6 +28,8 @@ Gval Tempo2 New
 Gval Tempo3 New
 Gval Tempo4 New
 Gval tempVar New
+Gval washcount1 New 0
+Gval washcount2 New 0
 
 ; Variables for subroutines 
 Gval cntAspVol New
