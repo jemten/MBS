@@ -1,7 +1,0 @@
-[Protocol]
-Title=ST_part1
-ConfigFile=..\Protocols\ST_production\ST_part_I\ST_part1_NS_modIVT.Cfg
-Script=..\Protocols\ST_production\ST_part_I\ST_part1_NS_modIVT.Prt
-Prologue=..\Protocols\ST_production\ST_part_I\ST_part1_NS_modIVT.Plg
-VarFile=..\Protocols\ST_production\ST_part_I\ST_part1_NS_modIVT.Var
-General=..\Protocols\Constants\RNASelection.Gen
