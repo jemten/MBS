@@ -1,7 +1,0 @@
-[Protocol]
-Title=ST_part1
-ConfigFile=..\Protocols\ST_production\ST_part_I\ST_SpeedVac\ST_part1.cfg
-Script=..\Protocols\ST_production\ST_part_I\ST_SpeedVac\ST_part1.Prt
-Prologue=..\Protocols\ST_production\ST_part_I\ST_SpeedVac\ST_part1.Plg
-VarFile=..\Protocols\ST_production\ST_part_I\ST_SpeedVac\ST_part1.Var
-General=..\Protocols\Constants\RNASelection.Gen

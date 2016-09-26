@@ -1,7 +1,0 @@
-[Protocol]
-Title=ST_part2
-ConfigFile=..\Protocols\ST_development\1mL_Nunc\Part_II\ST_part2_Nunc.Cfg
-Script=..\Protocols\ST_development\1mL_Nunc\Part_II\ST_part2_Nunc.Prt
-Prologue=..\Protocols\ST_development\1mL_Nunc\Part_II\ST_part2_Nunc.Plg
-VarFile=..\Protocols\ST_development\1mL_Nunc\Part_II\ST_part2_Nunc.Var
-General=..\Protocols\Constants\RNASelection.Gen
