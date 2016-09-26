@@ -1,33 +1,24 @@
 (1-1-1)[ProtocolInfo]
 AddToLogFile ">(1-1-1)"
-; ST_part1.prt
-; AJ
-; ST part 1 automated sample prep for MBS 8000
-; SOP v.9
-; No speedvac version, eluting in 10 ul instead of 20.
-; The IVT reaction will be slightly more diluted 16 ul --> 23 ul
 
-; Add protocol info to log file:
+;Add protocol info to log file:
 AddToLogFile ""
-AddToLogFile "SOP v.9"
-AddToLogFile ""
+AddToLogFile "ST part 1 automated sample prep for MBS 8000+"
+AddToLogFile "Based on SOP v.9"
+AddToLogFile "Released 2015-09-30 / Anders Jemt"
 
-;This value is probably redundant 141218/AJ
-;Gval state New 0
 
 ; ======================================================INITIALIZATION
 
 (1-2-1)[Initialize]
-AddToLogFile ">(1-2-1)"
 AddToLogFile ">(1-2-1)"
 AddToLogFile "Protocol started"
 RunMessage "Initializing protocol..."
 ; Start protocol timer:
 Gval startTime New
 Gval startTime Let @SECONDCOUNT
-;org all
 _SetTemp 1 $EnzymeTemp
-_SetTemp 2 $SSSTemp
+_SetTemp 2 $DenatTemp
 Call HomeMotors
 MoveTo TRASH
 ActionZ #Z_SPEED_H
@@ -40,46 +31,38 @@ TipOff
 AddToLogFile ">(1-3-1) setting plate volumes"
 
 ; Reaction plate
-SetPlateVolume SECOND_STRAND_SYNTHESIS 0
-SetPlateVolume BLUNTING_REACTION 0
-SetPlateVolume IVT 0
-SetPlateVolume POST_IVT 0
+SetPlateVolume ADAPTER_DENATURATION 0
+SetPlateVolume ADAPTER_LIGATION 0
+SetPlateVolume POST_ADAPTER_LIGATION 0
+SetPlateVolume XTRAWORKPOS 0
+SetPlateVolume CDNA 0
+SetPlateVolume CLEANING1 0
 
 ; Deep well plate
 SetPlateVolume XP_BEADS $xpTotalBeadVol
 SetPlateVolume ETOH $xpTotalEthanolVol
-SetPlateVolume ETOH2 $xpSecondEthanolVol
 SetPlateVolume ELUTION_BUFFER $xpTotalElutionVol
 SetPlateVolume WATER $TotalDilutionVol
-;SetPlateVolume WASH_BUFFER $xpTotalWashVol
 SetPlateVolume OIL $TotalOilVol
 
 ; Cooling plate
-SetPlateVolume SAMPLE $StartVol
-SetPlateVolume SS_MIX $SSMixVol
-SetPlateVolume BLUNTING_MIX $BluntingMixVol
-SetPlateVolume EDTA $EDTAVol
-SetPlateVolume IVT_MIX $IVTMixVol
-SetPlateVolume DNTP_MIX $TotaldNTPMixVol
+SetPlateVolume ADAPTER $AdapterVol
+SetPlateVolume T4MIX $T4MixVol
+SetPlateVolume SSADAPTER $SSAdapterVol
+SetPlateVolume SSMIX $SSMixVol
+SetPlateVolume POST_CDNA 0
 SetPlateVolume FINISHED 0
 
 (1-4-1)[ReadyTips]
 AddToLogFile ">(1-4-1)"
-Call GetNewTips	
-Call PreAspiration2
+Call GetNewTips
+Call PreAspiration
 GoHome
 
-; ====================================================== SECOND_STRAND_SYNTHESIS
-
-(2-1-1)[SetReactionTemp]
-AddToLogFile ">(2-1-1)"
-AddToLogFile "Setting reaction temperature"
-RunMessage "Waiting for enzyme block to cool"
-_SetTemp 2 $SSSTemp
-
-(2-1-2)[CheckEnzymeTemp]
-AddToLogFile ">(2-1-2)"
+(1-5-1)[CheckEnzymeTemp]
+AddToLogFile ">(1-5-1)"
 AddToLogFile "Checking Enzyme temperature"
+RunMessage "Waiting for enzyme plate to cool down"
 ; Wait for heat block
 _AlarmLevel $tempDif
 ;WAITLOOP1
@@ -87,34 +70,25 @@ WaitSec $1sec
 _ChkAlarm 1
 IfGoto <> 0 ;WAITLOOP1
 
-(2-1-3)[EnzymeBox]
-AddToLogFile ">(2-1-3)
+(1-6-1)[EnzymeBox]
+AddToLogFile ">(1-6-1)
 AddToLogFile "User loads Enzyme plate"
 BeginInfoBox "Load Enzyme Plate"
 	Label "Place the enzyme plate in the left peltier element" C
 EndInfoBox
 
-(2-1-4)[GetSample]
-AddToLogFile ">(2-1-4)"
-AddToLogFile "Getting Sample"
-RunMessage "Getting sample"
-MoveTo SAMPLE
-Gval cntAspVol Let $StartVol
-Call AspirateVolumeCold
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
 
-(2-1-5)[DispSample]
-AddToLogFile ">(2-1-5)
-AddToLogFile "Disp Sample in SSmix"
-RunMessage "Mixing sample and 2nd strand synt. mix" 
-MoveTo SS_MIX
-Call TipBlowOutAndTouchAndMix
-Amove Z 0 W
-Call PreAspiration2
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
+; ====================================================== ADAPTER LIGATION
 
-(2-2-1)[CheckSSTemp]
+(2-1-1)[AdapterLigation]
+AddToLogFile ">(2-1-1)"
+AddToLogFile "Adapter Ligation started"
+RunMessage "Adapter ligation started"
+
+(2-2-1)[CheckDenatTemp]
+AddToLogFile ">(2-2-1)"
 AddToLogFile "Waiting for heatblock"
+RunMessage "Waiting for heatblock to reach Denat temp"
 ; Wait for heat block
 _AlarmLevel $tempDif
 ;WAITLOOP1
@@ -122,164 +96,130 @@ WaitSec $1sec
 _ChkAlarm 2
 IfGoto <> 0 ;WAITLOOP1
 
-(2-3-1)[AspSampleAndSSMix]
+(2-3-1)[AspRNA]
 AddToLogFile ">(2-3-1)"
-AddToLogFile "Aspirating sample and SS-mix"
-RunMessage "Transferring SSS mix to reaction plate"
-MoveTo SS_MIX
+AddToLogFile "Aspirating adapter"
+RunMessage "Denaturating RNA"
+MoveTo ADAPTER
 Gval cntAspVol Let @WellVolume
 Call AspirateVolumeCold
+AddToLogFile "Check this volume!"
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
 
-(2-3-2)[DispSampleAndSSMix]
-AddToLogFile ">(2-3-2)"
-AddToLogFile "Adding SSS mix to reaction plate"
-MoveTo SECOND_STRAND_SYNTHESIS
-Call TipBlowOutAndTouchM
-Call PreAspiration
-StartWatch 1
-GoHome
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
-
-(2-3-3)[OilCover]
-AddToLogFile ">(2-3-3)"
-AddToLogFile "Covering SSS reaction with oil"
-RunMessage "Covering sample with oil"
-Call ReturnTips
-Call GetNewTips
-Call PreAspiration
-Sval OilPosition Let OIL
-Sval DispPosition Let SECOND_STRAND_SYNTHESIS
-Call OilRoutine2
-
-(2-4-1)[SSSIncubation]
+(2-4-1)[DispRNA]
 AddToLogFile ">(2-4-1)"
-AddToLogFile "Starting 2nd strand incubation"
-;Removed tip washing step since the tip is changed 
-Call ReturnTips
+MoveTo ADAPTER_DENATURATION
+Call TipBlowOutAndTouchM
+Call PreAspiration
 GoHome
-Call HomeMotors
-Org P W
-GVal IncTime Let $SSTime
-Sval IncType Let "Second strand synthesis,"
-Call Incubation
-  
-(2-5-1)[AspSSS]
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
+
+(2-5-1)[DenatIncubation]
+; Perhaps cover the sample in oil
+; Alternatively work out the evaporation loss
 AddToLogFile ">(2-5-1)"
-AddToLogFile "Transfering SSS to blunting mix"
-RunMessage "Transfering SSS to blunting mix"
-Call GetNewTips
-Call PreAspiration2
-MoveTo SECOND_STRAND_SYNTHESIS
-Sval AspPosition Let SECOND_STRAND_SYNTHESIS
-Sval DispPosition Let BLUNTING_MIX
-Gval AqPhase Let @WellVolume
-Gval AqPhase Sub $OILVol
-AddToLogFile "AqPhase: " $AqPhase "Oilphase: " $OILVol
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-Gval XtraAquaAsp Let 2
-Call GetUnderOilRoutine2
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-
-(2-6-1)[ChangeTipAndMix]  
-AddToLogFile ">(2-6-1)"
-RunMessage "Changing tips"
-Call ReturnTips
-Call GetNewTips
-Call PreAspiration2
-MoveTo BLUNTING_MIX
-Call GeneralMix
-Call PreAspiration2
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-
-(2-6-2)[AspBlunting]
-AddToLogFile ">(2-6-2)"
-AddToLogFile "Starting blunting incubation"
-RunMessage "Starting blunting incubation"
-Gval cntAspVol Let @WellVolume
-Call AspirateVolumeCold
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-
-(2-6-3)[DispBlunting]
-AddToLogFile ">(2-6-3)"
-AddToLogFile "Dispensing Blunting mix"
-MoveTo BLUNTING_REACTION
-Call TipBlowOutAndTouchM
-;Down% 10% #Z_SPEED_L
-;SideY% 90 #Y_SPEED_M
-;SideY% -90 #Y_SPEED_M
-;WaitMsec $500msec
-;SideY% 0 #Y_SPEED_M
 StartWatch 1
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
+Gval IncTime Let $DenatTime
+Sval IncType Let "RNA denaturation"
+Call Incubation
+
+(2-6-1)[SetLigTemp]
+AddToLogFile ">(2-6-1)"
+_SetTemp 2 $LigTemp
+
+(2-7-1)[AspDenat]
+AddToLogFile ">(2-7-1)"
+AddToLogFile "Samples denaturated"
+RunMessage "Denaturation finished"
+MoveTo ADAPTER_DENATURATION
+Gval cntAspVol Let @WellVolume
+Call AspirateVolume
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
+
+(2-8-1)[DispDenat]
+AddToLogFile ">(2-8-1)"
+MoveTo ADAPTER
+Call TipBlowOutAndTouchM
+Call PreAspiration
 GoHome
-Call PreAspiration2
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
 
-(2-7-1)[BluntingIncubation]
-AddToLogFile ">(2-7-1)"
-GVal IncTime Let $BluntingTime
-Sval IncType Let "Blunting,"
-Call Incubation
-  
-(2-8-1)[AspBlunt]
-AddToLogFile ">(2-8-1)"
-AddToLogFile "Adding EDTA to reaction"
-RunMessage "Adding EDTA to reaction"
-_SetTemp 2 $startTemp
-MoveTo BLUNTING_REACTION
+(2-9-1)[CheckLigTemp]
+AddToLogFile ">(2-9-1)"
+AddToLogFile "Waiting for block to reach lig. temp"
+RunMessage "Waiting for block to reach lig. temp"
+_AlarmLevel $tempDif
+;WaitLoop
+WaitSec  $1sec
+_ChkAlarm  2
+IfGoto NE 0 ;WaitLoop
+AddToLogfile "Reached"
+
+(2-10-1)[AspAdapRNA]
+AddToLogFile ">(2-10-1)"
+AddToLogFile "Starting adapter ligation"
+RunMessage "Starting adapter ligation"
+MoveTo ADAPTER
+Gval cntAspVol Let @WellVolume
+AddToLogFile "cntAspVol:" $cntAspVol
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
+Call AspirateVolumeCold
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
+
+(2-11-1)[DispAdapRNA]
+AddToLogFile ">(2-11-1)"
+MoveTo T4MIX
+Call TipBlowOutAndTouchM
+Call PreAspiration
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
+
+(2-12-1)[AspLigMix]
+AddToLogFile ">(2-12-1)"
+MoveTo T4MIX 
 Gval cntAspVol Let @WellVolume
 Call AspirateVolumeCold
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
 
-(2-9-1)[DispBlunt]  
-AddToLogFile ">(2-9-1)
-MoveTo EDTA
+(2-13-1)[DispLigMix]
+AddToLogFile ">(2-13-1)"
+MoveTo ADAPTER_LIGATION
 Call TipBlowOutAndTouchM
-Call PreAspiration2
-Call GeneralMix
+Call PreAspiration
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
 
-; ========================================================== cDNA Purification 
+(2-14-1)[StartAdapTimer]
+AddToLogFile ">(2-14-1)"
+AddToLogFile "Starting adapter ligation timer"
+StartWatch 1
 
-(3-1-1)[ReadyTips]
-AddToLogFile ">(3-1-1)"
-AddToLogFile "ReadyTips"
-RunMessage "Changing Tips"
+(2-15-1)[ReadyTips1]
+AddToLogFile "(>2-15-1)"
 Call ReturnTips
 Call GetNewTips
 Call PreAspiration
 
-(3-2-1)[StartXpPurification]
-AddToLogFile ">(3-2-1)"
-AddToLogFile "Starting Agencourt Purification"
-RunMessage "AgencourtXP purification"
-Sval cntXPStartingPos Let EDTA
-Sval cntXPWorkingPos Let BLUNTING_REACTION
-Sval cntXPElutionPos Let IVT_MIX
-Gval cntXPBeadVol Let $xpBeadVol
-Gval cntXPElutionVol Let $dNTPMixVol
-Gval cntNoTransfer Let 0
-Gval cntPostXPTemp Let $IVTTemp
-Sval cntBufferPos Let DNTP_MIX
-Call AgencourtPurification
+(2-16-1)[DispOil]
+AddToLogFile ">(2-16-1)"
+Sval OilPosition Let OIL
+Sval DispPosition Let ADAPTER_LIGATION
+Call OilRoutine2
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
 
-	
-; =========================================================== IVT
-(4-1-1)[SetIVTTemp]
-AddToLogFile ">(4-1-1)"
-AddToLogFile "Setting IVT reaction temperature"
-_SetTemp 2 $IVTTemp
-
-(4-2-1)[ReadyTips]
-AddToLogFile ">(4-2-1)"
+(2-17-1)[TipDiscard]
+AddToLogFile ">(2-17-1)"
+AddToLogFile "Returning Tips"
 Call ReturnTips
-Call GetNewTips
-Call PreAspiration2
+GoHome
+Org P W
+Call HomeMotors
 
-(4-3-1)[CheckIVTTemp]
-AddToLogFile ">(4-3-1)"
-AddToLogFile "Ramping up Heat to  IVT Temp."
-RunMessage "Ramping up Heat to IVT Temp."
+(2-18-1)[Ligation_Incubation]
+AddToLogFile ">(2-18-1)"
+Gval IncTime Let $LigTime
+Sval IncType Let "Adapter ligation" 
+Call Incubation
+_SetTemp 2 $startTemp
 _AlarmLevel $tempDif2
 ;WaitLoop
 WaitSec  1
@@ -287,71 +227,13 @@ _ChkAlarm  2
 IfGoto NE 0 ;WaitLoop
 AddToLogfile "Reached"
 
-(4-4-1)[AspIVTmix]
-AddToLogFile ">(4-4-1)"
-AddToLogFile "Aspirating IVT mix"
-RunMessage "Aspirating IVT mix."
-MoveTo IVT_MIX
-Gval cntAspVol Let @WellVolume
-Call AspirateVolumeCold
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-
-(4-5-1)[DispIVTmix]  
-AddToLogFile ">(4-5-1)
-AddToLogFile "Dispensing IVTmix to reaction plate"
-RunMessage "Dispensing IVT mix."
-MoveTo IVT
-Call TipBlowOutAndTouchAndMix
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-
-(4-6-1)[InitTimer]
-StartWatch 1
-Call ReturnTips
+(2-18-2)[ReadyTips2]
+AddToLogFile ">(2-18-2)"
 Call GetNewTips
 Call PreAspiration
 
-(4-7-1)[GetOil]
-AddToLogFile ">(4-7-1)"
-RunMessage "Adding oil to sample"
-Sval OilPosition Let OIL
-Sval DispPosition Let IVT
-Call OilRoutine2
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-
-(4-8-1)[TipDiscard]
-AddToLogFile ">(4-8-1)"
-AddToLogFile "Returning Tips"
-RunMessage "Returning Tips"
-Call ReturnTips
-GoHome
-Org P W
-Call HomeMotors
-
-(4-9-1)[IVT_Incubation]
-_SetTemp 1 37
-Gval IncTime Let $IVTTime
-Sval IncType Let "IVT,"
-Call Incubation
-
-(4-9-2)[LowerTemp]
-AddToLogFile ">(4-9-2)"
-RunMessage "Waiting for IVT temp to fall"
-_SetTemp 2 $startTemp
-_AlarmLevel $tempDif2
-;WaitLoop
-WaitSec  1
-_ChkAlarm  2
-IfGoto NE 0 ;WaitLoop
-AddToLogfile "Reached temp"
-
-(4-10-1)[ReadyTips]
-AddToLogFile ">(4-10-1)"
-Call GetNewTips
-Call PreAspiration
-GoHome
-
-(4-11-1)[GetUnderOil]
-AddToLogFile ">(4-11-1)"
+(2-19-1)[GetUnderOil]
+AddToLogFile ">(2-19-1)"
 AddToLogFile "Getting sample under oil"
 RunMessage "Getting sample under oil"
 ; String variables that must be set
@@ -360,60 +242,19 @@ RunMessage "Getting sample under oil"
 ; Variables that must be set
 ; $AqPhase = Total volume except oil
 ; $XtraAquaAsp = Extra asp volume to get all 
-MoveTo IVT
-Sval AspPosition Let IVT
-Sval DispPosition Let POST_IVT
+MoveTo ADAPTER_LIGATION
+Sval AspPosition Let ADAPTER_LIGATION
+Sval DispPosition Let POST_ADAPTER_LIGATION
 Gval AqPhase Let @WellVolume
 Gval AqPhase Sub $OILVol
 AddToLogFile "AqPhase: " $AqPhase "Oilphase: " $OILVol
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-Gval XtraAquaAsp Let 2
+Gval XtraAquaAsp Let 1
 Call GetUnderOilRoutine2
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
 
-(4-12-1)[TipDiscard]
-AddToLogFile ">(4-12-1)"
-AddToLogFile "ReadyTips"
-RunMessage "Changing Tips"
-Call ReturnTips
-Call GetNewTips
-Call PreAspiration2
-
-(4-13-1)[AspWater]
-AddToLogFile ">(4-13-1)
-RunMessage "Diluting Sample"
-MoveTo ELUTION_BUFFER
-Gval cntAspVol Let 7
-Call AspirateVolumeCold
-
-(4-14-1)[DispWater]
-AddToLogFile ">(4-14-1)"
-MoveTo POST_IVT
-Call TipBlowOutAndTouchM
-Call PreAspiration2
-
-(4-15-1)[StartXpPurification]
-AddToLogFile ">(4-15-1)"
-_SetTemp 1 $EnzymeTemp
-AddToLogFile "Starting Agencourt Purification"
-RunMessage "AgencourtXP purification"
-Sval cntXPStartingPos Let POST_IVT
-Sval cntXPWorkingPos Let POST_IVT
-Gval cntNoTransfer Let 1
-Sval cntXPElutionPos Let FINISHED
-Gval cntXPBeadVol Let $xpBeadVol2
-Gval cntXPElutionVol Let $xpElutionVol2
-Gval cntPostXPTemp Let $EnzymeTemp
-;Bionanlyzer option
-If $BioOption = 0
-	Gval cntXPElutionVol Let $BioEluteVol
-EndIf
-AddToLogFile "Elution volume" $cntXPElutionVol "ul"
-Call AgencourtPurification
-;Set store temp while waiting for user
-
-(4-16-1)[TipDiscard]
-AddToLogFile ">(4-16-1)"
+(2-20-1)[TipDiscard]
+AddToLogFile ">(2-20-1)"
 AddToLogFile "Returning Tips"
 RunMessage "Returning Tips"
 Call ReturnTips
@@ -421,8 +262,278 @@ GoHome
 Org P W
 Call HomeMotors
 
-(4-17-1)[EndOfProtocol]
+; ====================================================== RNA CLEANING
+
+(3-1-1)[RNACleanUp]
+AddToLogFile ">(3-1-1)"
+AddToLogFile "RNACleanUp started"
+RunMessage "RNACleanUp started"
+
+(3-2-1)[ReadyTips]
+AddToLogFile ">(3-2-1)"
+Call GetNewTips
+Call PreAspiration
+
+(3-3-1)[StartXpPurification]
+AddToLogFile ">(3-3-1)"
+AddToLogFile "Starting Agencourt Purification"
+Sval cntXPStartingPos Let POST_ADAPTER_LIGATION
+Sval cntXPWorkingPos Let POST_ADAPTER_LIGATION
+Sval cntXPElutionPos Let SSADAPTER
+Gval cntXPBeadVol Let $Bead1Vol
+Gval cntXPElutionVol Let $xpElutionVol
+Gval cntPostXPTemp Let $SSDenatTemp
+Gval cntNoTransfer Let 1
+Call AgencourtPurification
+;Set store temp while waiting for user
+Call ReturnTips 
+
+
+; ====================================================== CDNA SYNTHESIS
+
+(4-1-1)[RNACleanUp]
+AddToLogFile ">(4-1-1)"
+AddToLogFile "Denaturing cDNA adapters and aRNA"
+RunMessage "Denaturing cDNA adapters and aRNA"
+
+(4-2-1)[SetSSDenatTemp]
+AddToLogFile ">(4-2-1)"
+_SetTemp 2 $SSDenatTemp
+
+(4-3-1)[ReadyTips3]
+AddToLogFile ">(4-3-1)"
+AddToLogFile "Changing tips"
+Call GetNewTips
+Call PreAspiration
+
+(4-4-1)[CheckDenatTemp]
+AddToLogFile ">(4-4-1)"
+AddToLogFile "Waiting for heatblock"
+RunMessage "Waiting for heatblock to reach denat. temp"
+; Wait for heat block
+_AlarmLevel $tempDif
+;WAITLOOP1
+WaitSec $1sec
+_ChkAlarm 2
+IfGoto <> 0 ;WAITLOOP1
+
+(4-5-1)[AspSSaRNA]
+AddToLogFile ">(4-5-1)"
+AddToLogFile "Denaturing aRNA and primers"
+RunMessage "Denaturing aRNA and primers"
+MoveTo SSADAPTER
+Gval cntAspVol Let @WellVolume
+Call AspirateVolumeCold
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
+
+(4-6-1)[DispSSaRNA]
+AddToLogFile ">(4-6-1)"
+MoveTo CDNA
+Call TipBlowOutAndTouchM
+GoHome
+Call PreAspiration
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
+
+(4-7-1)[DenatIncubation]
+AddToLogFile ">(4-7-1)"
+StartWatch 1
+Gval IncTime Let $SSDenatTime
+Sval IncType Let "Denaturation"
+Call Incubation
+
+(4-8-1)[SetCDNATemp]
+AddToLogFile ">(4-8-1)"
+_SetTemp 2 $cDNATemp
+
+(4-9-1)[AspDenat]
+AddToLogFile ">(4-9-1)"
+AddToLogFile "SSadapter and aRNA denaturated"
+RunMessage "SSadapter and aRNA denaturated"
+MoveTo CDNA
+Gval cntAspVol Let @WellVolume
+Call AspirateVolume
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
+
+(4-10-1)[DispDenat]
+AddToLogFile ">(4-10-1)"
+MoveTo SSMIX
+Call TipBlowOutAndTouchM
+GoHome
+Call PreAspiration
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
+
+(4-10-2)[CheckcDNATemp]
+AddToLogFile ">(4-10-2)"
+AddToLogFile "Waiting for block to reach cDNA synthesis temp"
+RunMessage "Waiting for block to reach cDNA synthesis temp"
+_AlarmLevel $tempDif
+;WaitLoop
+WaitSec  1
+_ChkAlarm  2
+IfGoto NE 0 ;WaitLoop
+AddToLogfile "Reached"
+
+(4-11-1)[AspCDNAMix]
+AddToLogFile ">(4-11-1)"
+AddToLogFile "Starting cDNA synthesis"
+RunMessage "Starting cDNA synthesis"
+MoveTo SSMIX
+Call GeneralMix
+Call PreAspiration
+Gval cntAspVol Let @WellVolume
+Call AspirateVolumeCold
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
+
+(4-12-1)[DispCDNAMix]
+AddToLogFile ">(4-12-1)"
+MoveTo CDNA
+Call TipBlowOutAndTouchM
+Call PreAspiration
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
+
+(4-12-2)[ChangeEnzymeTemp]
+AddToLogFile ">(4-12-2)"  
+AddToLogFile "Ramping up heat on enzyme plate to prevent condensation"
+_SetTemp 1 70
+
+(4-13-1)[StartCDNATimer]
+AddToLogFile ">(4-13-1)"
+AddToLogFile "Starting cDNA synthesis timer"
+StartWatch 1
+
+(4-13-2)[TipChange]
+AddToLogFile ">(4-13-2)"
+Call ReturnTips
+Call GetNewTips
+Call PreAspiration
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
+
+(4-13-3)[DispOil]
+AddToLogFile ">(4-13-3)"
+Sval OilPosition Let OIL
+Sval DispPosition Let CDNA
+Call OilRoutine2
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
+
+(4-13-4)[TipDiscard]
+AddToLogFile ">(4-13-4)"
+AddToLogFile "Returning Tips"
+Call ReturnTips
+GoHome
+Org P W
+Call HomeMotors
+
+(4-14-1)[CDNA_Incubation1]
+AddToLogFile ">(4-14-1)"
+Gval IncTime Let $CDNATime1 
+Sval IncType Let "cDNA synthesis part 1"
+Call Incubation
+
+(4-14-2)[SetEnzymetemp]
+AddToLogFile ">(4-14-2)"
+_SetTemp 1 $EnzymeTemp
+StartWatch 1
+
+(4-14-3)[CDNA_Incubation2]
+AddToLogFile ">(4-14-3)"
+Gval IncTime Let $CDNATime2 
+Sval IncType Let "cDNA synthesis part 2"
+Call Incubation
+
+(4-14-4)[SetXPtemp]
+AddToLogFile ">(4-14-4)"
+_SetTemp 2 25
+
+(4-15-1)[ReadyTips]
+AddToLogFile ">(4-15-1)"
+RunMessage "cDNA synthesis completed"
+Call GetNewTips
+Call PreAspiration
+
+(4-16-1)[GetUnderOil]
+AddToLogFile ">(4-16-1)"
+AddToLogFile "Getting sample under oil"
+RunMessage "Getting sample under oil"
+; String variables that must be set
+; $AspPosition
+; $DispPosition
+; Variables that must be set
+; $AqPhase = Total volume except oil
+; $XtraAquaAsp = Extra asp volume to get all 
+MoveTo CDNA
+Sval AspPosition Let CDNA
+Sval DispPosition Let POST_CDNA
+Gval AqPhase Let @WellVolume
+Gval AqPhase Sub $OILVol
+AddToLogFile "AqPhase: " $AqPhase "Oilphase: " $OILVol
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
+Gval XtraAquaAsp Let 0
+Call GetUnderOilRoutine2
+AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
+
+(4-17-1)[TipDiscard]
 AddToLogFile ">(4-17-1)"
+AddToLogFile "Returning Tips"
+RunMessage "Returning Tips"
+Call ReturnTips
+GoHome
+Org P W
+Call HomeMotors
+
+; ====================================================== CDNA CLEANING
+
+(5-1-1)[cDNACleanUp]
+AddToLogFile ">(5-1-1)"
+AddToLogFile "cDNACleanUp started"
+RunMessage "initializing cDNACleanUp"
+
+(5-2-1)[SetInitTemp]
+;AddToLogFile ">(5-2-1)"
+;_SetTemp 2 25
+
+(5-3-1)[ReadyTips]
+AddToLogFile ">(5-3-1)"
+Call GetNewTips
+Call PreAspiration
+GoHome
+
+(5-4-1)[CheckTemp]
+AddToLogFile ">(5-4-1)"
+AddToLogFile "Waiting for block to cool down"
+RunMessage "Waiting for block to cool down"
+_AlarmLevel $tempDif2
+;WaitLoop
+WaitSec  1
+_ChkAlarm  2
+IfGoto NE 0 ;WaitLoop
+AddToLogfile "Reached"
+_SetTemp 2 $startTemp
+
+(5-5-1)[StartXpPurification]
+AddToLogFile ">(5-5-1)"
+AddToLogFile "Starting Agencourt Purification"
+Sval cntXPStartingPos Let POST_CDNA
+Sval cntXPWorkingPos Let CLEANING1
+Sval cntXPElutionPos Let FINISHED
+Gval cntXPBeadVol Let $Bead2Vol
+Gval cntXPElutionVol Let $xpElutionVol
+Gval cntPostXPTemp Let $endTemp
+Gval cntNoTransfer Let 0
+Call AgencourtPurification
+;Set store temp while waiting for user
+; need to set bead volume as well as elution volume
+
+(5-6-1)[TipDiscard]
+AddToLogFile ">(5-6-1)"
+AddToLogFile "Returning Tips"
+RunMessage "Returning Tips"
+Call ReturnTips
+GoHome
+Org P W
+Call HomeMotors
+
+(5-7-1)[EndOfProtocol]
+AddToLogFile ">(5-7-1)"
 ; Report to log file:
 Gval endTimeS New
 Gval endTimeM New
@@ -445,6 +556,8 @@ If $doHold = 1
     AddToLogFile "Holding temp at " $endTemp "°C until user confirms quit"
     RunMessage "Holding temp at " $endTemp "°C"
     BeginInfoBox "Finish hold" 0
+		Label "Runtime: " $endTimeH "h" $endTimeM "min" $endTimeS "sec" C
+		Label ""
         Label "Confirm to finish script and reset temp to normal (" $startTemp "°C)"
     EndInfoBox
     Gval endTimeS Let @SECONDCOUNT
@@ -463,8 +576,8 @@ _SetTemp 1 $startTemp
 _SetTemp 2 $startTemp
 END
 
-(4-18-1)[UVClean]
-AddToLogFile ">(4-18-1)"
+(5-8-1)[UVClean]
+AddToLogFile ">(5-8-1)"
 ;BeginInfoBox "Clear robot" 0
 ;       Label "Remove plates and clean out waste containers." C
 ;		Label ""
@@ -483,23 +596,16 @@ AddToLogFile ">(4-18-1)"
 ;AddToLogFile "Number of tipwashes: " $nTipwashes 
 END
 
-  
 ; ======================================================== STOP
-(5-1-1)[Empty_page]
-AddToLogFile ">(5-1-1)"
-End
 
 (6-1-1)[Empty_page]
 AddToLogFile ">(6-1-1)"
-End
 
 (7-1-1)[Empty_page]
 AddToLogFile ">(7-1-1)"
-End
 
 (8-1-1)[Empty_page]
 AddToLogFile ">(8-1-1)"
-End
 
 ; #############################################################################
 ; #############################################################################
@@ -670,41 +776,10 @@ Do $nGeneralMixes
 Loop
 LiqOut $Tempo4 #P_SPEED_M
 WaitSec $1sec
-If @WellVolume GE 120
-	Down% 20 #Z_SPEED_H
-ElseIf @WellVolume GE 100
-	Down% 30 #Z_SPEED_H
-ElseIf @WellVolume GE 70
-	Down% 40 #Z_SPEED_H
-ElseIf @WellVolume GE 50
-	Down% 50 #Z_SPEED_H
-ElseIf @WellVolume GE 25
-	Down% 70 #Z_SPEED_H
-ElseIf @WellVolume GE 10
-	Down% 75 #Z_SPEED_H
-Else
-	Down% 85 #Z_SPEED_H
-EndIf
-WaitMsec $500msec
-
+Call VolumeCheck
 LiqOutAll #P_SPEED_M
 WaitSec $1sec
-If @WellVolume GE 120
-	Down% 20 #Z_SPEED_H
-ElseIf @WellVolume GE 100
-	Down% 30 #Z_SPEED_H
-ElseIf @WellVolume GE 70
-	Down% 40 #Z_SPEED_H
-ElseIf @WellVolume GE 50
-	Down% 50 #Z_SPEED_H
-ElseIf @WellVolume GE 25
-	Down% 70 #Z_SPEED_H
-ElseIf @WellVolume GE 10
-	Down% 75 #Z_SPEED_H
-Else
-	Down% 85 #Z_SPEED_H
-EndIf
-WaitMsec $500msec
+Call VolumeCheck
 If @TipVolume >= @TipWellVolume
 	LiqOut @TipVolume #P_SPEED_ML
 Else
@@ -802,7 +877,7 @@ Do $tipWashRepeats
     Loop
     ActionZ #Z_SPEED_M
 	LiqOutWell% 75 #Z_SPEED_L
-	AMove Y 17654 W
+	AMove Y $BrushOffPosition W
     LiqOutAll #P_SPEED_L
     LiqOut $preAspirationVol #P_SPEED_H     ; Blow-out
     Org P
@@ -1015,24 +1090,8 @@ AddToLogFile ">(9-2-1)"
 ; Further modified to remove any air before dispensing to the bottom 
 ; Dispenses all liquid in tip in current well
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
-If @WellVolume GE 120
-	Down% 20 #Z_SPEED_H
-ElseIf @WellVolume GE 100
-	Down% 30 #Z_SPEED_H
-ElseIf @WellVolume GE 70
-	Down% 40 #Z_SPEED_H
-ElseIf @WellVolume GE 50
-	Down% 50 #Z_SPEED_H
-ElseIf @WellVolume GE 25
-	Down% 70 #Z_SPEED_H
-ElseIf @WellVolume GE 10
-	Down% 75 #Z_SPEED_H
-Else
-	Down% 85 #Z_SPEED_H
-EndIf
+Call VolumeCheck
 Gval Tempo2 Let @TipWellVolume
-;Down% 80 #Z_SPEED_H
-WaitMsec $500msec
 Gval Tempo3 Let $Tempo2
 Gval Tempo3 Mul 0.3 
 LiqOutWell $Tempo3 #Z_SPEED_L
@@ -1048,48 +1107,14 @@ Gval Tempo3 Let $Tempo2
 Gval Tempo3 Mul 0.5
 LiqOutWell $Tempo3 #P_SPEED_M
 WaitSec $3sec
-If @WellVolume GE 120
-	Down% 20 #Z_SPEED_H
-ElseIf @WellVolume GE 100
-	Down% 30 #Z_SPEED_H
-ElseIf @WellVolume GE 70
-	Down% 40 #Z_SPEED_H
-ElseIf @WellVolume GE 50
-	Down% 50 #Z_SPEED_H
-ElseIf @WellVolume GE 25
-	Down% 70 #Z_SPEED_H
-ElseIf @WellVolume GE 10
-	Down% 75 #Z_SPEED_H
-Else
-	Down% 85 #Z_SPEED_H
-EndIf
-WaitMsec $500msec
+Call VolumeCheck
 LiqOutAll #P_SPEED_M
 WaitSec $1sec
-If @WellVolume GE 120
-	Down% 20 #Z_SPEED_H
-ElseIf @WellVolume GE 100
-	Down% 30 #Z_SPEED_H
-ElseIf @WellVolume GE 70
-	Down% 40 #Z_SPEED_H
-ElseIf @WellVolume GE 50
-	Down% 50 #Z_SPEED_H
-ElseIf @WellVolume GE 25
-	Down% 70 #Z_SPEED_H
-ElseIf @WellVolume GE 10
-	Down% 75 #Z_SPEED_H
-Else
-	Down% 85 #Z_SPEED_H
-EndIf
-WaitMsec $500msec
+Call VolumeCheck
 If @TipVolume >= @TipWellVolume
 	LiqOut @TipVolume #P_SPEED_ML
 Else
-	AddToLogFile "Strange extra volume"
-	AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
     Org P
-	AddToLogFile "Volume after dispering the extra"
-	AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
 Endif
 WaitSec $1sec
 ActionZ #Z_SPEED_H W
@@ -1134,24 +1159,8 @@ AddToLogFile ">(9-2-3)"
 ; brushes against well walls to get rid of any drops
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
 ; count volumes 
-If @WellVolume GE 120
-	Down% 20 #Z_SPEED_H
-ElseIf @WellVolume GE 100
-	Down% 30 #Z_SPEED_H
-ElseIf @WellVolume GE 70
-	Down% 40 #Z_SPEED_H
-ElseIf @WellVolume GE 50
-	Down% 50 #Z_SPEED_H
-ElseIf @WellVolume GE 25
-	Down% 70 #Z_SPEED_H
-ElseIf @WellVolume GE 10
-	Down% 75 #Z_SPEED_H
-Else
-	Down% 85 #Z_SPEED_H
-EndIf
+Call VolumeCheck
 Gval Tempo2 Let @TipWellVolume
-;Down% 70 #Z_SPEED_H
-WaitMsec $500msec
 Gval Tempo3 Let $Tempo2
 Gval Tempo3 Mul 0.3
 LiqOutWell $Tempo3 #Z_SPEED_L
@@ -1167,22 +1176,7 @@ Gval Tempo3 Let $Tempo2
 Gval Tempo3 Mul 0.5
 LiqOutWell $Tempo3 #P_SPEED_M
 WaitSec $3sec
-If @WellVolume GE 120
-	Down% 20 #Z_SPEED_H
-ElseIf @WellVolume GE 100
-	Down% 30 #Z_SPEED_H
-ElseIf @WellVolume GE 70
-	Down% 40 #Z_SPEED_H
-ElseIf @WellVolume GE 50
-	Down% 50 #Z_SPEED_H
-ElseIf @WellVolume GE 25
-	Down% 70 #Z_SPEED_H
-ElseIf @WellVolume GE 10
-	Down% 75 #Z_SPEED_H
-Else
-	Down% 85 #Z_SPEED_H
-EndIf
-WaitMsec $500msec
+Call VolumeCheck
 LiqOutAll #P_SPEED_M
 ; Changing the mixing to alway reetend a small volume in the tip 150922 /AJ
 Gval tempVar Let @WellVolume
@@ -1215,40 +1209,10 @@ Do 5
 Loop
 LiqOut $Tempo4 #P_SPEED_M
 WaitSec $1sec
-If @WellVolume GE 120
-	Down% 20 #Z_SPEED_H
-ElseIf @WellVolume GE 100
-	Down% 30 #Z_SPEED_H
-ElseIf @WellVolume GE 70
-	Down% 40 #Z_SPEED_H
-ElseIf @WellVolume GE 50
-	Down% 50 #Z_SPEED_H
-ElseIf @WellVolume GE 25
-	Down% 70 #Z_SPEED_H
-ElseIf @WellVolume GE 10
-	Down% 75 #Z_SPEED_H
-Else
-	Down% 85 #Z_SPEED_H
-EndIf
-WaitMsec $500msec
+Call VolumeCheck
 LiqOutAll #P_SPEED_M
 WaitSec $1sec
-If @WellVolume GE 120
-	Down% 20 #Z_SPEED_H
-ElseIf @WellVolume GE 100
-	Down% 30 #Z_SPEED_H
-ElseIf @WellVolume GE 70
-	Down% 40 #Z_SPEED_H
-ElseIf @WellVolume GE 50
-	Down% 50 #Z_SPEED_H
-ElseIf @WellVolume GE 25
-	Down% 70 #Z_SPEED_H
-ElseIf @WellVolume GE 10
-	Down% 75 #Z_SPEED_H
-Else
-	Down% 85 #Z_SPEED_H
-EndIf
-WaitMsec $500msec
+Call VolumeCheck
 If @TipVolume >= @TipWellVolume
 	LiqOut @TipVolume #P_SPEED_ML
 Else
@@ -1418,30 +1382,41 @@ If @TipVolume > @TipWellVolume
 EndIf
 Return
 
+(9-6-1)[VolumeCheck]
+AddToLogFile ">(9-6-1)"
+If @WellVolume GE 120
+	Down% 20 #Z_SPEED_H
+ElseIf @WellVolume GE 100
+	Down% 30 #Z_SPEED_H
+ElseIf @WellVolume GE 70
+	Down% 40 #Z_SPEED_H
+ElseIf @WellVolume GE 50
+	Down% 50 #Z_SPEED_H
+ElseIf @WellVolume GE 25
+	Down% 70 #Z_SPEED_H
+ElseIf @WellVolume GE 10
+	Down% 75 #Z_SPEED_H
+Else
+	Down% 85 #Z_SPEED_H
+EndIf
+WaitMsec $500msec
+Return
 
-; ======================================================
-; ======================================================
+
+
 ; ====================================================== Agencourt_PURIF
 ; The CA-BEAD_PURIF subroutine has been modified to suite Agencourt RNAClean XP (XP)
-; Trying to increase the elution volume by 2 ul to see
-; if I get closer to the real value
-; Changed the elution position to be 10% down into the elution well
-; lowering down 80% after magpass
-
 
 (10-1-1)[AgencourtPurification]
 AddToLogFile ">(10-1-1)"
-; modifying the XP protocol to use tipwellvol for liquids and tipvol for air
-; 150905 AJ
 
 ; String variables must be set before call:
 ; $cntXPStartingPos = Which plate (row) contains the sample
-; $cntXPStartingPos = Which plate (row) the beads and samples should incubate
 ; $cntXPElutionPos = Which plate (row) should be eluted in
+; $cntXPWorkingPos 
 ; $cntXPBeadVol = amount of XP beads
 ; $cntXPElutionVol = Elution volume
 ; $cntPostXPTemp = Sets the temperature for next step when the elution starts
-; $cntBufferPos = alternative position for the elution buffer 
 AddToLogFile "Starting RNAClean purification protocol"
 AddToLogFile "Starting position: " $cntXPStartingPos
 AddToLogFile "Elution position: " $cntXPElutionPos
@@ -1519,7 +1494,7 @@ RunMessage "XP incubation temperature reached"
 AddToLogFile ">(10-3-5)"
 Call LowerTips
 
-(10-3-6)[DispSample]
+(10-3-6)[DispBeads]
 AddToLogFile ">(10-3-6)"
 AddToLogFile "Dispensing beads to sample"
 ; #repl
@@ -1551,7 +1526,7 @@ If $cntNoTransfer EQ 1
 	GoForward BindMix
 EndIf
 Gval cntAspVol Let @Wellvolume
-Call AspirateVolumeCold
+Call AspirateVolume
 MoveTo $cntXPWorkingPos
 Call TipBlowOutAndTouchM
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
@@ -1602,7 +1577,7 @@ If @Result < $xpBeadIncTime
     Goto ;INC_LOOP
 EndIf
 
-(10-6-1)[Capture_Beads]
+(10-6-1)[*Capture Beads*]
 AddToLogFile ">(10-6-1)"
 
 (10-7-1)[Capture Part]
@@ -1774,7 +1749,7 @@ Down% 80 #Z_SPEED_H
 LiqOut #V_MAG_PASS #P_SPEED_LLL
 LiqOutWell $xpTemp1 #P_SPEED_LL
 ;To accommodate for MBS 8000 the Y position was changed to an absolute value in the other direction
-AMove Y 17654 W
+AMove Y $BrushOffPosition W
 LiqOutWell $xpTemp2 #P_SPEED_LL
 LiqOut $xpExtraDisp #P_SPEED_H
 ;SideY% -95 #Y_SPEED_M
@@ -1865,7 +1840,7 @@ LiqOut #V_MAG_PASS #P_SPEED_LL
 WaitMsec $500msec
 ;SideY% -90 #Y_SPEED_M
 ;To accommodate for MBS 8000 the Y position was changed to an absolute value in the other direction
-AMove Y 17654 W
+AMove Y $BrushOffPosition W
 WaitMsec $mixDelay2
 LiqOutAll #P_SPEED_LL
 WaitSec $1sec
@@ -1908,6 +1883,14 @@ Do 30
     LiqIn $xpTemp1 #P_SPEED_M
 Loop
 WaitSec $10sec
+;Do 15
+;    LiqOut $xpTemp1 #P_SPEED_MH
+;    LiqIn $xpTemp1 #P_SPEED_MH
+;Loop
+;Do 15
+;    LiqOut $xpTemp1 #P_SPEED_H
+;    LiqIn $xpTemp1 #P_SPEED_H
+;Loop
 LiqOut $xpTemp1 #P_SPEED_LL
 LiqOut $xpAirVol #P_SPEED_H ;Removes extra xpPreAirAsp
 ;GVal IncTime Let $DryTime
@@ -1934,21 +1917,7 @@ Do 3
 	LiqIn 25 #P_SPEED_M
 	LiqOut 25 #P_SPEED_M
 Loop
-WaitSec $1sec
-Down% 10 #Z_SPEED_M W
-LiqOut $xpAirVol #P_SPEED_H
-LiqOut $xpAirVol #P_SPEED_H
-SideY% 100 #Y_SPEED_H
-SideY% -100 #Y_SPEED_H
-SideY% 0 #Y_SPEED_M
-Amove Z 0 W
-;Call TipBlowOutAndTouchM
-MoveTo $cntBufferPos
-LiqIn $xpAirVol #P_SPEED_H
-LiqIn $xpAirVol #P_SPEED_H
-Gval cntAspVol Let $cntXPElutionVol
-Call AspirateVolumeCold
-;LiqInWell $cntXPElutionVol #P_SPEED_M
+LiqInWell $cntXPElutionVol #P_SPEED_M
 WaitSec $1sec
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
 
@@ -2053,8 +2022,6 @@ GoHome
 
 ; RNA purification protocol finshed
 RunMessage "RNA purification complete!"
-;Reset buffer position
-Sval cntBufferPos Let ELUTION_BUFFER
 ;Adjust the plate volume to remove the extra ul added
 Gval cntXPElutionVol Let @WellVolume
 Gval cntXPElutionVol Sub 1
@@ -2229,7 +2196,7 @@ Loop
 AddToLogFile ">(11-4-6)"
 LiqIn #V_MAG_PASS #P_SPEED_M
 ;SideY% -90 #Y_SPEED_H
-AMove Y 17654 W
+AMove Y $BrushOffPosition W
 LiqOut #V_MAG_PASS #P_SPEED_M
 LiqOutAll #P_SPEED_MH
 LiqOut $xpAirVol #P_SPEED_H
@@ -2279,13 +2246,13 @@ Loop
 AddToLogFile ">(11-5-6)"
 LiqIn #V_MAG_PASS #P_SPEED_M
 ;SideY% -90 #Y_SPEED_H
-AMove Y 17654 W
+AMove Y $BrushOffPosition W
 LiqOut #V_MAG_PASS #P_SPEED_M
 LiqOutAll #P_SPEED_MH
 LiqOut $xpAirVol #P_SPEED_H
 Org P
 SideY% 0 #Y_SPEED_H
-AMove Y 17654 
+AMove Y $BrushOffPosition 
 SideY% 0 #Y_SPEED_H
 Amove Z 0 W
 Org Z
@@ -2304,3 +2271,4 @@ AddToLogFile ">(11-6-1)"
 End
 
 ; ======================================================XP_BEAD_PURIF_END
+
