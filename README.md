@@ -1,5 +1,5 @@
 # Automated Library prep for Spatial Transcriptomics
-This repository contains the scripts neccesarry to run the Spatial Transcriptomics library preparation on a Magnatrix 8000+. The technology has been described by Ståhl et.al.
+This repository contains the scripts neccesarry to run the Spatial Transcriptomics library preparation on a Magnatrix 8000+. The technology has been described by Ståhl et.al. and a description of the automation is available here: https://www.nature.com/articles/srep37137
 
 ##Programs included 
 Two programs are included. The first allows for parallel preparation of 1 to 8 samples and a second higher throughput program capable of preparing up to 16 samples. Each program consists of two parts. The first part takes the cDNA from the Spatial transcriptomics array and outputs the amplified RNA that is used as input in the second part. The second part of the programs outputs a sequencing library that is ready for multiplex library indexing. 
