@@ -144,52 +144,36 @@ Description=10
 
 [LBL2]
 Type=Label
-Description=Second strand synthesis
+Description=T4 Blunting
 
 [LINE2]
 Type=Line
 
-[SSS1]
+[B1]
 Type=String
-Description=Second strand synthesis temperature (C)
-VariableName=SSSTemp
+Description=Blunting temperature (C)
+VariableName=BluntingTemp
 DefaultValue=16
 ValidMin=10
 ValidMax=70
 
-[SSS2]
+[B2]
 Type=Hidden
-Description=Second strand synthesis mix volume (ul)
-VariableName=SSMixVol
-DefaultValue=5
-ValidMin=5
-ValidMax=100
-
-[SSS3]
-Type=String
-Description=Second strand synthesis incubation time (min)
-VariableName=SSTime
-DefaultValue=120
-ValidMin=1
-ValidMax=180
-
-[SSS4]
-Type=Hidden
-Description=Blunting mix volume (ul)
+Description=T4 Blunting mix volume (ul)
 VariableName=BluntingMixVol
-DefaultValue=5
+DefaultValue=10
 ValidMin=5
 ValidMax=100
 
-[SSS5]
+[B3]
 Type=String
-Description=Blunting incubation time (min)
+Description=T4 blunting incubation time (min)
 VariableName=BluntingTime
 DefaultValue=20
 ValidMin=1
-ValidMax=60
+ValidMax=180
 
-[SSS6]
+[B4]
 Type=Hidden
 Description=EDTA volume (ul)
 VariableName=EDTAVol

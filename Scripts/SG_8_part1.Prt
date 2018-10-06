@@ -33,7 +33,6 @@ TipOff
 AddToLogFile ">(1-3-1) setting plate volumes"
 
 ; Reaction plate
-SetPlateVolume SECOND_STRAND_SYNTHESIS 0
 SetPlateVolume BLUNTING_REACTION 0
 SetPlateVolume IVT 0
 SetPlateVolume POST_IVT 0
@@ -49,7 +48,6 @@ SetPlateVolume OIL $TotalOilVol
 
 ; Cooling plate
 SetPlateVolume SAMPLE $StartVol
-SetPlateVolume SS_MIX $SSMixVol
 SetPlateVolume BLUNTING_MIX $BluntingMixVol
 SetPlateVolume EDTA $EDTAVol
 SetPlateVolume IVT_MIX $IVTMixVol
@@ -68,7 +66,7 @@ GoHome
 AddToLogFile ">(2-1-1)"
 AddToLogFile "Setting reaction temperature"
 RunMessage "Waiting for enzyme block to cool"
-_SetTemp 2 $SSSTemp
+_SetTemp 2 $BluntingTemp
 
 (2-1-2)[CheckEnzymeTemp]
 AddToLogFile ">(2-1-2)"
@@ -98,15 +96,15 @@ AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "We
 
 (2-1-5)[DispSample]
 AddToLogFile ">(2-1-5)
-AddToLogFile "Disp Sample in SSmix"
-RunMessage "Mixing sample and 2nd strand synt. mix" 
-MoveTo SS_MIX
+AddToLogFile "Disp Sample in Bluntingmix"
+RunMessage "Mixing sample and blunting mix" 
+MoveTo BLUNTING_MIX
 Call TipBlowOutAndTouchAndMix
 Amove Z 0 W
 Call PreAspiration2
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
 
-(2-2-1)[CheckSSTemp]
+(2-2-1)[CheckBluntingTemp]
 AddToLogFile "Waiting for heatblock"
 ; Wait for heat block
 _AlarmLevel $tempDif
@@ -115,102 +113,37 @@ WaitSec $1sec
 _ChkAlarm 2
 IfGoto <> 0 ;WAITLOOP1
 
-(2-3-1)[AspSampleAndSSMix]
+(2-3-1)[AspSampleAndBluntingMix]
 AddToLogFile ">(2-3-1)"
-AddToLogFile "Aspirating sample and SS-mix"
-RunMessage "Transferring SSS mix to reaction plate"
-MoveTo SS_MIX
+AddToLogFile "Aspirating sample and blunting mix"
+RunMessage "Transferring blunting mix to reaction plate"
+MoveTo BLUNTING_MIX
 Gval cntAspVol Let @WellVolume
 Call AspirateVolumeCold
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
 
-(2-3-2)[DispSampleAndSSMix]
+(2-3-2)[DispSampleAndBluntingMix]
 AddToLogFile ">(2-3-2)"
-AddToLogFile "Adding SSS mix to reaction plate"
-MoveTo SECOND_STRAND_SYNTHESIS
+AddToLogFile "Adding Blunting mix to reaction plate"
+MoveTo BLUNTING_REACTION
 Call TipBlowOutAndTouchM
 Call PreAspiration
 StartWatch 1
 GoHome
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume
 
-(2-3-3)[OilCover]
-AddToLogFile ">(2-3-3)"
-AddToLogFile "Covering SSS reaction with oil"
-RunMessage "Covering sample with oil"
-Call ReturnTips
-Call GetNewTips
-Call PreAspiration
-Sval OilPosition Let OIL
-Sval DispPosition Let SECOND_STRAND_SYNTHESIS
-Call OilRoutine2
-
-(2-4-1)[SSSIncubation]
+(2-4-1)[BluntingIncubation]
 AddToLogFile ">(2-4-1)"
-AddToLogFile "Starting 2nd strand incubation"
-;Removed tip washing step since the tip is changed 
-Call ReturnTips
+AddToLogFile "Starting blunting incubation"
 GoHome
 Call HomeMotors
 Org P W
-GVal IncTime Let $SSTime
-Sval IncType Let "Second strand synthesis,"
-Call Incubation
-  
-(2-5-1)[AspSSS]
-AddToLogFile ">(2-5-1)"
-AddToLogFile "Transfering SSS to blunting mix"
-RunMessage "Transfering SSS to blunting mix"
-Call GetNewTips
-Call PreAspiration2
-MoveTo SECOND_STRAND_SYNTHESIS
-Sval AspPosition Let SECOND_STRAND_SYNTHESIS
-Sval DispPosition Let BLUNTING_MIX
-Gval AqPhase Let @WellVolume
-Gval AqPhase Sub $OILVol
-AddToLogFile "AqPhase: " $AqPhase "Oilphase: " $OILVol
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-Gval XtraAquaAsp Let 2
-Call GetUnderOilRoutine2
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-
-(2-6-1)[ChangeTipAndMix]  
-AddToLogFile ">(2-6-1)"
-RunMessage "Changing tips"
-Call ReturnTips
-Call GetNewTips
-Call PreAspiration2
-MoveTo BLUNTING_MIX
-Call GeneralMix
-Call PreAspiration2
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-
-(2-6-2)[AspBlunting]
-AddToLogFile ">(2-6-2)"
-AddToLogFile "Starting blunting incubation"
-RunMessage "Starting blunting incubation"
-Gval cntAspVol Let @WellVolume
-Call AspirateVolumeCold
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-
-(2-6-3)[DispBlunting]
-AddToLogFile ">(2-6-3)"
-AddToLogFile "Dispensing Blunting mix"
-MoveTo BLUNTING_REACTION
-Call TipBlowOutAndTouchM
-StartWatch 1
-GoHome
-Call PreAspiration2
-AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
-
-(2-7-1)[BluntingIncubation]
-AddToLogFile ">(2-7-1)"
 GVal IncTime Let $BluntingTime
-Sval IncType Let "Blunting,"
+Sval IncType Let "Blunting overhangs,"
 Call Incubation
   
-(2-8-1)[AspBlunt]
-AddToLogFile ">(2-8-1)"
+(2-5-1)[AspBlunt]
+AddToLogFile ">(2-5-1)"
 AddToLogFile "Adding EDTA to reaction"
 RunMessage "Adding EDTA to reaction"
 _SetTemp 2 $startTemp
@@ -219,8 +152,8 @@ Gval cntAspVol Let @WellVolume
 Call AspirateVolumeCold
 AddToLogFile "TipVolume is: " @TipVolume "TipWellVolume is: " @TipWellVolume "WellVolume is: " @WellVolume  
 
-(2-9-1)[DispBlunt]  
-AddToLogFile ">(2-9-1)
+(2-6-1)[DispBlunt]  
+AddToLogFile ">(2-6-1)
 MoveTo EDTA
 Call TipBlowOutAndTouchM
 Call PreAspiration2

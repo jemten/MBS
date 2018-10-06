@@ -1,5 +1,5 @@
 (1-1-1)[Spatial Genomics -Automation]
-; 150930 Spatial Genomics Prologue
+; Spatial Genomics Prologue
 ; Anders Jemt
 
 ; =================================================== INSTRUMENT
@@ -83,7 +83,6 @@ ElseIf $debugMode = 2
     Gval secToMinConv Let 0
 EndIf
 
-Gval SSTime * $secToMinConv
 Gval BluntingTime * $secToMinConv
 Gval IVTTime * $secToMinConv
 Gval IVTTime * $secToMinConv
@@ -214,5 +213,5 @@ Gval TotalDilutionVol Add $XtraDeepWellvol
  
 ; Total OilOilOil volume 
 Gval TotalOILVol New $OILVol
-Gval TotalOILVol Mul 2
+Gval TotalOILVol Mul 1
 Gval TotalOILVol Add $XtraDeepWellvol
