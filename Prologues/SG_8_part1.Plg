@@ -1,0 +1,218 @@
+(1-1-1)[Spatial Genomics -Automation]
+; 150930 Spatial Genomics Prologue
+; Anders Jemt
+
+; =================================================== INSTRUMENT
+(1-2-1)[Instrument]
+; Set default speed 
+Speed X #X_SPEED
+Speed Y #Y_SPEED
+Speed Z #Z_SPEED
+Speed P #P_SPEED
+Speed M #M_SPEED
+
+; Load volume-to-pulse table
+LoadVPTable 0
+
+SetTrashPosition WASTE
+SelectTip Standard
+Verbose !0(Default Debug Level)
+
+; Set instrument specific bruch off position
+Gval BrushOffPosition New 17654
+
+; =================================================== GENERAL
+(1-2-2)[InitVariables]
+; Create temporary variables
+Gval Tempo New
+Gval Tempo1 New
+Gval Tempo2 New
+Gval Tempo3 New
+Gval Tempo4 New
+Gval tempVar New
+
+; Variables for subroutines 
+Gval cntAspVol New
+Sval cntXPStartingPos New
+Sval cntXPWorkingPos New
+Sval cntXPElutionPos New
+Gval cntXPBeadVol New
+Gval cntXPElutionVol New
+Gval cntNoTransfer New
+GVal cntPostXPTemp New
+Sval cntBufferPos New ELUTION_BUFFER
+
+Gval IncTime New
+Sval IncType New
+Sval OilPosition New
+Sval DispPosition New
+Sval AspPosition New
+Gval AqPhase New
+Gval XtraAquaAsp New
+
+; Mixing delays in milliseconds
+Gval mixDelay1 New 150
+Gval mixDelay2 New 200
+
+;For use with incubation routine
+Gval Sec New
+
+; ======================================================TIME_CONTROL
+; For use with WaitSec/WaitMsec and can be set to zero for debugging
+Gval 500msec New 500
+Gval 1sec New 1
+Gval 2sec New 2
+Gval 3sec New 3
+Gval 10sec New 10
+If $debugMode = 2
+    Gval 500msec Let 0
+    Gval 1sec Let 0
+	Gval 2sec Let 0
+    Gval 3sec Let 0
+    Gval 10sec Let 0
+    Gval mixDelay1 Let 0
+    Gval mixDelay2 Let 0
+    Gval mixDelay Let 0
+EndIf
+
+; To skip incubation wait times when testing
+Gval secToMinConv New 60
+If $debugMode = 1
+    Gval secToMinConv Let 1
+ElseIf $debugMode = 2
+    Gval secToMinConv Let 0
+EndIf
+
+Gval SSTime * $secToMinConv
+Gval BluntingTime * $secToMinConv
+Gval IVTTime * $secToMinConv
+Gval IVTTime * $secToMinConv
+Gval xpBeadIncTime * $secToMinConv
+Gval xpElutionTime * $secToMinConv
+Gval DryTime * $secToMinConv
+
+; To skip heat/cool times when testing
+If $debugMode = 1
+    Gval SSSTemp Let $startTemp
+    Gval IVTTemp Let $startTemp
+	Gval EnzymeTemp Let $startTemp
+EndIf
+
+; ======================================================VOLUMES
+; Wash solution volume used in subroutine RinseTips
+; Not used in this script
+Gval tipWashVol New 50
+
+; Extra volume for each row in DeepWellPlate
+Gval XtraDeepWellvol New 50
+
+; Extra dNTPMixVol
+Gval TotaldNTPMixVol New $dNTPMixVol
+Gval TotaldNTPMixVol Add 2
+
+; ======================================================XP-BEAD_PURIF_VARS
+Sval tempString1 New
+
+; Total number of XP purifications in the protocol
+Gval numberOfXPRuns New 3
+
+; Max mixing volume to protect P motor
+; Tried increasing for better mixing in the first Ampure
+Gval xpBeadMixVol New 150
+
+; Local (but global really) temporary variables
+Gval xpTemp1 New
+Gval xpTemp2 New
+Gval ethanolWashesDone New
+
+; Note: Changed RMove P to LiqIn/LiqOut since they're kept tracked of
+; in sysvar @TipVolume, which is useful
+; This var replaces caPreAirAsp and caPreAirDisp
+Gval xpAirVol New 10
+Gval caAirVol New 10
+; Changed the xpExtraDisp from 10 to 0 in order to accomodate for the larger volume 
+; Check if sufficient /AJ
+Gval xpExtraDisp New 0
+;Gval xpExtraDisp New 10
+
+; Ethanol volumes
+Gval xpEthanolVol New 50
+Gval xpEthanolVol * 4
+; Account for extra volumes needed and make sure the 
+; ethanol volume doesn't exceed max aspiration volume
+Gval xpTemp1 Let $xpAirVol
+Gval xpTemp1 + #V_MAG_PASS
+Gval xpTemp1 + $xpEthanolVol
+If $xpTemp1 > @MaxTipVolume
+    Gval xpEthanolVol Let @MaxTipVolume
+    Gval xpEthanolVol - #V_MAG_PASS
+    Gval xpEthanolVol - $xpAirVol
+    Gval xpEthanolVol - 5
+EndIf
+
+;Extra large volume to account for evaporaion losses during the IVT inc. 
+Gval xpSecondEthanolVol New 200
+Gval xpSecondEthanolVol Mul 3
+
+Gval xpWashVol New 45
+
+; Magnet variables
+Gval BF_MAG_HH New #BF_MAG_H
+Gval BF_MAG_HH + 90
+
+; Mixing variables
+; Times to mix during incubation
+Gval nMixes New 2
+Gval xpTotalIncTime New $xpBeadIncTime
+Gval mixInterval New
+Gval mixCount New
+
+; Bead resuspension mixes 
+Gval xpStirUps New 35
+
+; ======================================================TOTAL_VOLUMES
+
+Gval xpTotalBeadVol New $xpBeadVol
+;Gval xpTotalBeadVol Mul $numberOfXPRuns
+Gval xpTotalBeadVol Add $xpBeadVol2
+Gval xpTotalBeadVol Add $XtraDeepWellvol
+
+Gval xpTotalElutionVol New $xpElutionVol
+Gval xpTotalElutionVol Mul $numberOfXPRuns
+Gval xpTotalElutionVol Add 200
+
+Gval xpTotalWashVol New $xpWashVol
+; Removed the wash 
+; WashVol is used 1 times/XP run: 
+; 1x TipWashRoutine2, (1x WashRoutine)
+Gval xpTotalWashVol * 1
+Gval xpTotalWashVol Mul $numberOfXPRuns
+Gval xpTotalWashVol Add 100
+
+Gval xpTotalEthanolVol New $xpEthanolVol
+Gval xpTotalEthanolVol Mul 3
+;Gval xpTotalEthanolVol Mul $numberOfXPRuns
+Gval xpTotalEthanolVol Add 250
+
+Gval xpTotalSecondEthanolVol New $xpSecondEthanolVol
+Gval xpTotalSecondEthanolVol Add 1200
+
+; The wash buffer used for tip washing outside of CA protocol
+Gval totalTipWashVol New $tipWashVol
+Gval totalTipWashVol * $tipWashRepeats
+; This is the number of times we need to wash the tips:
+Gval totalTipWashVol * 2
+; Add some extra:
+Gval totalTipWashVol + 50
+
+; Use the same wash buffer row as CA uses
+Gval xpTotalWashVol Add $totalTipWashVol 
+
+Gval TotalDilutionVol New $ReacVol
+Gval TotalDilutionVol Mul 4
+Gval TotalDilutionVol Add $XtraDeepWellvol
+ 
+; Total OilOilOil volume 
+Gval TotalOILVol New $OILVol
+Gval TotalOILVol Mul 2
+Gval TotalOILVol Add $XtraDeepWellvol
