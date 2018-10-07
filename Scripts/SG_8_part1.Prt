@@ -4,9 +4,8 @@ AddToLogFile ">(1-1-1)"
 ;Add protocol info to log file:
 AddToLogFile ""
 AddToLogFile "SG part 1 automated sample prep for MBS 8000+"
-AddToLogFile "Based on SOP v.9"
 AddToLogFile "BETA VERSION"
-AddToLogFile "Released - / Anders Jemt"
+AddToLogFile "Released 2018-10-07 / Anders Jemt"
 
 
 ; ======================================================INITIALIZATION
@@ -20,7 +19,7 @@ RunMessage "Initializing protocol..."
 Gval startTime New
 Gval startTime Let @SECONDCOUNT
 _SetTemp 1 $EnzymeTemp
-_SetTemp 2 $SSSTemp
+_SetTemp 2 $BluntingTemp
 Call HomeMotors
 MoveTo TRASH
 ActionZ #Z_SPEED_H
