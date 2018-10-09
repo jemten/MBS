@@ -92,7 +92,7 @@ Gval DryTime * $secToMinConv
 
 ; To skip heat/cool times when testing
 If $debugMode = 1
-    Gval SSSTemp Let $startTemp
+    Gval BluntingTemp Let $startTemp
     Gval IVTTemp Let $startTemp
 	Gval EnzymeTemp Let $startTemp
 EndIf

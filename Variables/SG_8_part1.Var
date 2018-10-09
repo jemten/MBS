@@ -136,7 +136,7 @@ DefaultValue=65
 ValidMin=65
 ValidMax=65
 
-; ====================================================== SECOND STRAND SYNTHESIS
+; ====================================================== BLUNTING ENDS
 
 [DST1]
 Type=Distance
@@ -158,7 +158,7 @@ ValidMin=10
 ValidMax=70
 
 [B2]
-Type=Hidden
+Type=String
 Description=T4 Blunting mix volume (ul)
 VariableName=BluntingMixVol
 DefaultValue=10
